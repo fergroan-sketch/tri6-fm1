@@ -11,6 +11,7 @@ distortion, two effects, a four-slot mod matrix, unison with chord memory and an
 
 This is version {{VERSION}}. You install it at your own risk, and the installer can put M-VAVE's own firmware back.
 
+- [Play it in your browser](play/): the real firmware on an emulated FM-1, no FM-1 needed.
 - [Install](install/) it from Chrome or Edge, with the FM-1 connected by USB.
 - [Download {{PKG}}](firmware/{{PKG}}) to use the command-line installer: `python3 tools/fm1_install.py {{PKG}}`.
 - The source is under MPL-2.0. It's built on fm1-base and felucca-bsp, which come from Felucca by Leo Kuroshita,

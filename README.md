@@ -140,6 +140,13 @@ folder that holds both `fm1-base/` and `tri6-fm1/`:
 
 A release: `python3 fm1-base/tools/build.py tri6-fm1/app --release X.Y` (identity FM-1_62 and XXYYZZ).
 
+## Playing it in the browser
+
+[fergroan-sketch.github.io/tri6-fm1/play/](https://fergroan-sketch.github.io/tri6-fm1/play/) runs the released
+package unchanged on [fm1-emu](https://joakimeriksson.github.io/fm1-emu/), Joakim Eriksson's FM-1 emulator: no FM-1
+needed. The site (front page, web installer, player) is the gh-pages branch, made by
+`sh tri6-fm1/tools/make_pages.sh X.Y` after a release build.
+
 ## Installing
 
 The `.fwsc` is attached to each [release](https://github.com/fergroan-sketch/tri6-fm1/releases). Back up your FM-1 first. Installing TRI-6 FM-1 over JUNO FM-1 replaces JUNO's saved patches (both keep them in the
