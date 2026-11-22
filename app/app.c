@@ -126,10 +126,18 @@ static void banks_load(void)
             for (i = 0; i < BLK_N; i++)
                 patch_init(&blocks[b].p[i], &FACTORY[b * BLK_N + i < NFACTORY ? b * BLK_N + i : 0]);
             blocks[b].magic = BANK_MAGIC;
-        } else {
+        } else {                         /* saved by 0.3 or later: INIT slots get this version's patches */
             int i;
-            for (i = 0; i < BLK_N; i++)
+            tri_patch_t init;
+            patch_init(&init, &FACTORY[0]);
+            for (i = 0; i < BLK_N; i++) {
+                int idx = b * BLK_N + i;
                 mm_fix(&blocks[b].p[i]);
+                if (idx > 0 && idx < NFACTORY && !memcmp(&blocks[b].p[i], &init, sizeof init)) {
+                    patch_init(&blocks[b].p[i], &FACTORY[idx]);
+                    blk_dirty[b] = 1;
+                }
+            }
         }
 }
 

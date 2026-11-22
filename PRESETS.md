@@ -1,6 +1,6 @@
 # TRI-6 FM-1 factory bank
 
-128 patches, 000 to 127, laid out by kind. Every patch was made for this firmware; none is copied from any instrument's presets. Every patch but INIT has a MORPH route (the ALGORITHM knob): the mod matrix patches their own, the others a move that suits their kind.
+128 patches, 000 to 127, laid out by kind. Every patch was made for this firmware; none is copied from any instrument's presets. Every patch but INIT has a MORPH route (the ALGORITHM knob): the mod matrix patches their own, the others a move that suits their kind. Each patch's MORPH move is listed after its name.
 
 ## INIT
 
@@ -8,163 +8,163 @@
 
 ## Brass
 
-- 001 BRASS SECT
-- 002 SYNTH HORN
-- 003 SOFT BRASS
-- 004 BRASS SWELL
-- 005 BRIGHT STAB
-- 006 SYNC BRASS
-- 007 BRASS STACK
-- 008 PM BRASS
-- 009 BRASS 2POLE
-- 010 FANFARE
-- 011 MUTED HORN
+- 001 BRASS SECT (MORPH: shorter attack, cutoff up)
+- 002 SYNTH HORN (MORPH: shorter attack, cutoff up)
+- 003 SOFT BRASS (MORPH: shorter attack, cutoff up)
+- 004 BRASS SWELL (MORPH: shorter attack, cutoff up)
+- 005 BRIGHT STAB (MORPH: shorter attack, cutoff up)
+- 006 SYNC BRASS (MORPH: shorter attack, cutoff up)
+- 007 BRASS STACK (MORPH: shorter attack, cutoff up)
+- 008 PM BRASS (MORPH: shorter attack, cutoff up)
+- 009 BRASS 2POLE (MORPH: shorter attack, cutoff up)
+- 010 FANFARE (MORPH: shorter attack, cutoff up)
+- 011 MUTED HORN (MORPH: shorter attack, cutoff up)
 
 ## Pads
 
-- 012 WARM PAD
-- 013 GLASS PAD
-- 014 DARK PAD
-- 015 SLOW BLOOM
-- 016 PWM PAD
-- 017 SPACE PAD
-- 018 DRIFT PAD
-- 019 CRYSTAL PAD
-- 020 TRIGON PAD
-- 021 FDBK PAD
-- 022 SYNC PAD
-- 023 AIR PAD
-- 024 ICE PAD
+- 012 WARM PAD (MORPH: FX B mix up, cutoff up)
+- 013 GLASS PAD (MORPH: FX B mix up, cutoff up)
+- 014 DARK PAD (MORPH: FX B mix up, cutoff up)
+- 015 SLOW BLOOM (MORPH: FX B mix up, cutoff up)
+- 016 PWM PAD (MORPH: FX B mix up, cutoff up)
+- 017 SPACE PAD (MORPH: FX B mix up, cutoff up)
+- 018 DRIFT PAD (MORPH: FX B mix up, cutoff up)
+- 019 CRYSTAL PAD (MORPH: FX B mix up, cutoff up)
+- 020 TRIGON PAD (MORPH: FX B mix up, cutoff up)
+- 021 FDBK PAD (MORPH: FX B mix up, cutoff up)
+- 022 SYNC PAD (MORPH: FX B mix up, cutoff up)
+- 023 AIR PAD (MORPH: FX B mix up, cutoff up)
+- 024 ICE PAD (MORPH: FX B mix up, cutoff up)
 
 ## Strings
 
-- 025 STRINGS
-- 026 SLOW STRING
-- 027 ENSEMBLE
-- 028 CELLO SECT
-- 029 STRING MACH
-- 030 VIOLINS
-- 031 BOW STRINGS
-- 032 PIZZICATO
-- 033 OCTAVE STRS
-- 034 DARK STRING
+- 025 STRINGS (MORPH: LFO amount up, cutoff up)
+- 026 SLOW STRING (MORPH: LFO amount up, cutoff up)
+- 027 ENSEMBLE (MORPH: LFO amount up, cutoff up)
+- 028 CELLO SECT (MORPH: LFO amount up, cutoff up)
+- 029 STRING MACH (MORPH: LFO amount up, cutoff up)
+- 030 VIOLINS (MORPH: LFO amount up, cutoff up)
+- 031 BOW STRINGS (MORPH: LFO amount up, cutoff up)
+- 032 PIZZICATO (MORPH: LFO amount up, cutoff up)
+- 033 OCTAVE STRS (MORPH: LFO amount up, cutoff up)
+- 034 DARK STRING (MORPH: LFO amount up, cutoff up)
 
 ## Keys
 
-- 035 SOFT KEYS
-- 036 BELL KEYS
-- 037 CLAV
-- 038 POLY PIANO
-- 039 VIBES
-- 040 ORGAN
-- 041 EP TINE
-- 042 WURLY
-- 043 HARPSICHORD
-- 044 PERC ORGAN
-- 045 SYNC KEYS
-- 046 TOY PIANO
+- 035 SOFT KEYS (MORPH: longer decay, cutoff up)
+- 036 BELL KEYS (MORPH: longer decay, cutoff up)
+- 037 CLAV (MORPH: longer decay, cutoff up)
+- 038 POLY PIANO (MORPH: longer decay, cutoff up)
+- 039 VIBES (MORPH: longer decay, cutoff up)
+- 040 ORGAN (MORPH: longer decay, cutoff up)
+- 041 EP TINE (MORPH: longer decay, cutoff up)
+- 042 WURLY (MORPH: longer decay, cutoff up)
+- 043 HARPSICHORD (MORPH: longer decay, cutoff up)
+- 044 PERC ORGAN (MORPH: longer decay, cutoff up)
+- 045 SYNC KEYS (MORPH: longer decay, cutoff up)
+- 046 TOY PIANO (MORPH: longer decay, cutoff up)
 
 ## Bass
 
-- 047 FAT BASS
-- 048 SUB BASS
-- 049 ACID BASS
-- 050 UNISON BASS
-- 051 PLUCK BASS
-- 052 FM BASS
-- 053 DRIVE BASS
-- 054 WOBBLE BASS
-- 055 SYNC BASS
-- 056 GROWL BASS
-- 057 REESE BASS
-- 058 FUNK BASS
-- 059 DUB BASS
+- 047 FAT BASS (MORPH: cutoff up, drive up)
+- 048 SUB BASS (MORPH: cutoff up, drive up)
+- 049 ACID BASS (MORPH: cutoff up, drive up)
+- 050 UNISON BASS (MORPH: cutoff up, drive up)
+- 051 PLUCK BASS (MORPH: cutoff up, drive up)
+- 052 FM BASS (MORPH: cutoff up, drive up)
+- 053 DRIVE BASS (MORPH: cutoff up, drive up)
+- 054 WOBBLE BASS (MORPH: cutoff up, drive up)
+- 055 SYNC BASS (MORPH: cutoff up, drive up)
+- 056 GROWL BASS (MORPH: cutoff up, drive up)
+- 057 REESE BASS (MORPH: cutoff up, drive up)
+- 058 FUNK BASS (MORPH: cutoff up, drive up)
+- 059 DUB BASS (MORPH: cutoff up, drive up)
 
 ## Leads
 
-- 060 SYNC LEAD
-- 061 SAW LEAD
-- 062 SQUARE LEAD
-- 063 SCREAM LEAD
-- 064 GLIDE LEAD
-- 065 FEEDBACK LD
-- 066 SOLO FLUTE
-- 067 PM LEAD
-- 068 OCTAVE LEAD
-- 069 PWM LEAD
-- 070 SYNC SWEEP
-- 071 WHISTLE
-- 072 DRIVE LEAD
+- 060 SYNC LEAD (MORPH: drive up, LFO amount up)
+- 061 SAW LEAD (MORPH: drive up, LFO amount up)
+- 062 SQUARE LEAD (MORPH: drive up, LFO amount up)
+- 063 SCREAM LEAD (MORPH: drive up, LFO amount up)
+- 064 GLIDE LEAD (MORPH: drive up, LFO amount up)
+- 065 FEEDBACK LD (MORPH: drive up, LFO amount up)
+- 066 SOLO FLUTE (MORPH: drive up, LFO amount up)
+- 067 PM LEAD (MORPH: drive up, LFO amount up)
+- 068 OCTAVE LEAD (MORPH: drive up, LFO amount up)
+- 069 PWM LEAD (MORPH: drive up, LFO amount up)
+- 070 SYNC SWEEP (MORPH: drive up, LFO amount up)
+- 071 WHISTLE (MORPH: drive up, LFO amount up)
+- 072 DRIVE LEAD (MORPH: drive up, LFO amount up)
 
 ## Plucks and mallets
 
-- 073 PLUCK
-- 074 MALLET
-- 075 KALIMBA
-- 076 HARP
-- 077 STEEL DRUM
-- 078 MARIMBA
-- 079 NYLON
-- 080 BELL PLUCK
-- 081 MUSIC BOX
-- 082 SYNC PLUCK
+- 073 PLUCK (MORPH: cutoff up, longer decay)
+- 074 MALLET (MORPH: cutoff up, longer decay)
+- 075 KALIMBA (MORPH: cutoff up, longer decay)
+- 076 HARP (MORPH: cutoff up, longer decay)
+- 077 STEEL DRUM (MORPH: cutoff up, longer decay)
+- 078 MARIMBA (MORPH: cutoff up, longer decay)
+- 079 NYLON (MORPH: cutoff up, longer decay)
+- 080 BELL PLUCK (MORPH: cutoff up, longer decay)
+- 081 MUSIC BOX (MORPH: cutoff up, longer decay)
+- 082 SYNC PLUCK (MORPH: cutoff up, longer decay)
 
 ## Poly mod and effects
 
-- 083 METAL BELL
-- 084 CHAOS
-- 085 SWEEP FX
-- 086 LASER
-- 087 NOISE WIND
-- 088 RING BELL
-- 089 DRONE
-- 090 RISER
-- 091 ALARM
-- 092 SCI-FI
+- 083 METAL BELL (MORPH: LFO rate up, resonance up)
+- 084 CHAOS (MORPH: LFO rate up, resonance up)
+- 085 SWEEP FX (MORPH: LFO rate up, resonance up)
+- 086 LASER (MORPH: LFO rate up, resonance up)
+- 087 NOISE WIND (MORPH: LFO rate up, resonance up)
+- 088 RING BELL (MORPH: LFO rate up, resonance up)
+- 089 DRONE (MORPH: LFO rate up, resonance up)
+- 090 RISER (MORPH: LFO rate up, resonance up)
+- 091 ALARM (MORPH: LFO rate up, resonance up)
+- 092 SCI-FI (MORPH: LFO rate up, resonance up)
 
 ## Chords
 
-- 093 CHORD STAB
-- 094 MINOR 9
-- 095 FIFTHS
-- 096 MAJOR 7
-- 097 SUS4
-- 098 POWER CHORD
-- 099 HOUSE STAB
-- 100 DUB CHORD
+- 093 CHORD STAB (MORPH: FX A mix up, cutoff up)
+- 094 MINOR 9 (MORPH: FX A mix up, cutoff up)
+- 095 FIFTHS (MORPH: FX A mix up, cutoff up)
+- 096 MAJOR 7 (MORPH: FX A mix up, cutoff up)
+- 097 SUS4 (MORPH: FX A mix up, cutoff up)
+- 098 POWER CHORD (MORPH: FX A mix up, cutoff up)
+- 099 HOUSE STAB (MORPH: FX A mix up, cutoff up)
+- 100 DUB CHORD (MORPH: FX A mix up, cutoff up)
 
 ## Arpeggios
 
-- 101 ARP PLUCK
-- 102 ARP SEQ
-- 103 ARP BELLS
-- 104 ARP BASS
-- 105 ARP DRIVE
-- 106 ARP SYNC
-- 107 ARP RANDOM
-- 108 ARP DREAM
-- 109 ARP PWM
-- 110 ARP TRIGON
+- 101 ARP PLUCK (MORPH: longer decay, cutoff up)
+- 102 ARP SEQ (MORPH: longer decay, cutoff up)
+- 103 ARP BELLS (MORPH: longer decay, cutoff up)
+- 104 ARP BASS (MORPH: longer decay, cutoff up)
+- 105 ARP DRIVE (MORPH: longer decay, cutoff up)
+- 106 ARP SYNC (MORPH: longer decay, cutoff up)
+- 107 ARP RANDOM (MORPH: longer decay, cutoff up)
+- 108 ARP DREAM (MORPH: longer decay, cutoff up)
+- 109 ARP PWM (MORPH: longer decay, cutoff up)
+- 110 ARP TRIGON (MORPH: longer decay, cutoff up)
 
 ## Voices
 
-- 111 CHOIR
-- 112 VOCAL PAD
-- 113 AAH VOICES
-- 114 OOH CHOIR
+- 111 CHOIR (MORPH: FX B mix up, cutoff up)
+- 112 VOCAL PAD (MORPH: FX B mix up, cutoff up)
+- 113 AAH VOICES (MORPH: FX B mix up, cutoff up)
+- 114 OOH CHOIR (MORPH: FX B mix up, cutoff up)
 
 ## Mod matrix
 
-- 115 TWO LFOS
-- 116 VELO BRASS
-- 117 PRESS PAD
-- 118 KEY PIANO
-- 119 OSC3 WOBBLE
-- 120 RAND PLUCK
-- 121 S+H SWEEP
-- 122 ENV PWM KEY
-- 123 BEND GROWL
-- 124 WHEEL MORPH
-- 125 PRESS LEAD
-- 126 SLOW ATTACK
-- 127 MORPH PAD
+- 115 TWO LFOS (MORPH: cutoff up)
+- 116 VELO BRASS (MORPH: cutoff up)
+- 117 PRESS PAD (MORPH: FX B mix up)
+- 118 KEY PIANO (MORPH: cutoff up)
+- 119 OSC3 WOBBLE (MORPH: resonance up)
+- 120 RAND PLUCK (MORPH: longer decay)
+- 121 S+H SWEEP (MORPH: LFO rate up)
+- 122 ENV PWM KEY (MORPH: osc 1 width down)
+- 123 BEND GROWL (MORPH: drive up)
+- 124 WHEEL MORPH (MORPH: osc 2 level up)
+- 125 PRESS LEAD (MORPH: LFO amount up)
+- 126 SLOW ATTACK (MORPH: longer attack)
+- 127 MORPH PAD (MORPH: cutoff up, osc 2 level up, FX B mix up, LFO rate up, shorter attack)
