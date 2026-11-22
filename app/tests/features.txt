@@ -201,9 +201,13 @@ wait 30
 expect page 14
 turn ALGO 7
 wait 30
+turn K2 -20
+wait 200
 turn K2 10
 wait 30
 expect mm7src 10
+turn K3 -40
+wait 200
 turn K3 22
 wait 30
 expect mm7dst 22
@@ -222,7 +226,7 @@ turn SELECT -2
 wait 30
 expect page 13
 # a factory patch's routes: POLY PIANO, velocity to cutoff and key to decay
-midi C0 16
+midi C0 26
 wait 60
 expect mm0src 4
 expect mm0dst 12
@@ -231,3 +235,38 @@ expect mm1dst 23
 expect mm1amt 39
 # 0.2's routes, converted
 expect conv02 1
+# --- MORPH: ALGORITHM away from the matrix page is a macro (a matrix source), CC 16 too; OCT held + PRESETS jumps 10
+tap HOME
+wait 30
+midi C0 7F
+wait 60
+expect patch 127
+expect mm0src 11
+turn ALGO 1
+wait 200
+turn ALGO 1
+wait 30
+expect morph 2
+expect patch 127
+midi B0 10 64
+wait 60
+expect morph 100
+midi 90 3C 64
+wait 400
+shot morph.png
+midi 80 3C 00
+wait 300
+expect octave 0
+press OCT+
+turn PRESET -1
+wait 30
+release OCT+
+wait 30
+expect patch 117
+expect octave 0
+tap OCT+
+wait 30
+expect octave 1
+tap OCT-
+wait 30
+expect octave 0

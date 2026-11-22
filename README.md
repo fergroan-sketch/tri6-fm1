@@ -6,7 +6,7 @@ by Sequential or M-VAVE. The engine is written from scratch from the Trigon-6 us
 what each control does and its range. It contains no code or data from Sequential's firmware, and the factory patches
 are original designs.
 
-**Status: 0.3, pre-release.** It builds for the FM-1 and passes fm1-base's host simulator checks. It has not yet been
+**Status: 0.4, pre-release.** It builds for the FM-1 and passes fm1-base's host simulator checks. It has not yet been
 tested on a real FM-1: install it at your own risk, after a backup.
 
 ## The sound
@@ -75,10 +75,18 @@ P1 and P2 are named for the effect chosen: TIME / FDBK for the delays, RATE / DE
 FREQ / TRACK for the ring modulator, TIME / EARLY for hall, room and plate, DECAY / TONE for the spring. WAVE is
 written as its waves: T(ri), S(aw), P(ulse), R(everse saw), for example S+P.
 
-PRESET: next/previous patch. ALGO: ten patches at a time (on the MOD MATRIX page, the slot). SELECT: through every
-page in turn, HOME to ARPEGGIATOR. SAVE: store the patch (lit when edited).
-OCT-/OCT+: octave. REC held a second: Bluetooth on/off. 128 patches, 000 to 127; 000 to 065 are factory patches made
-for this firmware (see PRESETS.md), the rest start as INIT.
+PRESET: next/previous patch; with OCT- or OCT+ held, ten at a time (the octave then stays as it was). ALGO: MORPH, a
+macro knob (below; on the MOD MATRIX page, the slot). SELECT: through every page in turn, HOME to ARPEGGIATOR. SAVE:
+store the patch (lit when edited).
+OCT-/OCT+: octave, when let go. REC held a second: Bluetooth on/off. 128 patches, 000 to 127, all factory patches
+made for this firmware and laid out by kind (PRESETS.md): INIT, brass, pads, strings, keys, bass, leads, plucks and
+mallets, poly mod and effects, chords, arpeggios, voices, and the mod matrix patches (115 to 127). Each has a MORPH
+route; the levels are matched from renders of every patch (tools/gen_demo.py).
+
+**MORPH** is the ALGORITHM knob, and MIDI CC 16 (in and out): one knob, 0 to 127, whose meaning is the patch's. It is a
+mod matrix source, so a patch routes it wherever it likes (MORPH PAD, 127, opens the filter, brings in OSC 2, adds
+reverb and speeds the LFO with it). It is not saved: like the mod wheel, it stays where it is when the patch changes.
+Turning it shows its value, and NO ROUTE when the patch has no route from it.
 
 ## The mod matrix
 
@@ -90,7 +98,8 @@ before the matrix existed has them all OFF, and a bank saved by 0.2 (four routes
 - Sources: LFO (bipolar, after its shape), FIL ENV, AMP ENV, VELO, WHEEL, PRESSURE (the FM-1's keys, the hardest one
   held, or MIDI channel / poly pressure; the keys' pressure is also sent as channel pressure), KEY (the note, -1 at
   C-1 .. +1 at C9, 0 at middle C), RANDOM (a new value each note), BEND, OSC 3 (its wave, read at the control rate:
-  with OSC 3 at LO and its LEVEL down, a second LFO, each voice's own; KEY 3 off keeps its rate fixed, PITCH sets it).
+  with OSC 3 at LO and its LEVEL down, a second LFO, each voice's own; KEY 3 off keeps its rate fixed, PITCH sets it),
+  MORPH (the ALGORITHM knob or CC 16, 0..1).
 - Destinations, per voice: PITCH (all three oscillators), PITCH 1 / 2 / 3 (+-2 octaves at full amount, on a square law
   so small amounts are fine), PW 1 / 2 / 3, LEVEL 1 / 2 / 3, NOISE, CUTOFF (+-8 octaves), RES, FB/DRV, AMP, PAN,
   ENV AMT (the filter envelope's amount, +-9 octaves), ATTACK (both envelopes' attack) and DECAY (both envelopes'
@@ -104,7 +113,7 @@ before the matrix existed has them all OFF, and a bank saved by 0.2 (four routes
 Factory patches with routes: BRASS SECT (pressure to cutoff, velocity shortens the attack), WARM PAD and ARP RANDOM
 (a random pan a note), DRIFT PAD, STRINGS, CLAV, POLY PIANO and HARP (velocity to cutoff, higher keys decay sooner),
 WOBBLE BASS (wheel to LFO rate), the leads (pressure vibrato or brightness), SOLO FLUTE (velocity to breath noise),
-CHAOS, VOCAL PAD, and 066 TWO LFOS (OSC 3 at LO as a second LFO on pulse width and cutoff).
+CHAOS, VOCAL PAD, and 115 TWO LFOS (OSC 3 at LO as a second LFO on pulse width and cutoff).
 
 ## The boot screen
 
@@ -122,7 +131,8 @@ voice count if the load is too high. The SETUP page shows the load.
 
 In (USB, Bluetooth, TRS) and out (USB, Bluetooth):
 
-- Notes, pitch bend, mod wheel, sustain, CC 74 (brightness, added to the cutoff), CC 120/123, program change 0..127.
+- Notes, pitch bend, mod wheel, sustain, CC 74 (brightness, added to the cutoff), CC 16 (MORPH, in and out), CC
+  120/123, channel and poly pressure, program change 0..127.
 - The Trigon-6's controller numbers from its MIDI implementation, for the parameters it has a CC for: 3 BPM, 5 glide
   rate, 9 distortion, 12 volume, 40/41 amp env amount and velocity, 43-46 amp ADSR, 47 filter env amount, 50-53
   filter ADSR, 58-60 and 62 arpeggiator, 65 glide, 67-73 OSC 1, 75-81 OSC 2, 82-89 OSC 3 (the wave switches set

@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: MPL-2.0 */
 /* TRI-6 FM-1: the app around the engine (tri6.c). The FM-1's controls as a Trigon-6 style panel, in pages:
  *
- *   HOME  the patch: PRESET +-1, ALGO +-10 (on the MOD MATRIX page: the slot); SELECT steps through every page;
+ *   HOME  the patch: PRESET +-1 (+-10 with OCT- or OCT+ held; the octave then stays); SELECT steps through every
+ *         page; ALGO is MORPH, a macro for the mod matrix (on the MOD MATRIX page: the slot);
  *         K1..K4 CUTOFF, RES, ENV AMT, FDBK/DRIVE
  *   EDIT  OSC 1 > OSC 2 > OSC 3 > OSC MORE (PW 2, SYNC, PW 3, KEY 3)
  *   SEL   FILTER (CUTOFF, RES, ENV AMT, KEY) > FILTER 2 (POLES, VEL, NOISE, FDBK/DRIVE)
@@ -110,8 +111,14 @@ static void banks_load(void)
         if (plat_store_load(OBJ_BANK0 + (uint32_t)b, &blocks[b], sizeof blocks[b]) == (int)sizeof blocks[b]
             && blocks[b].magic == BANK_MAGIC_02) {   /* saved by 0.1 or 0.2: the same patches, routes converted */
             int i;
-            for (i = 0; i < BLK_N; i++)
+            tri_patch_t init;
+            patch_init(&init, &FACTORY[0]);
+            for (i = 0; i < BLK_N; i++) {
+                int idx = b * BLK_N + i;
                 mm_from_02(&blocks[b].p[i]);
+                if (idx >= 66 && idx < NFACTORY && !memcmp(&blocks[b].p[i], &init, sizeof init))
+                    patch_init(&blocks[b].p[i], &FACTORY[idx]);   /* still INIT past 0.2's bank: 0.3's patches */
+            }
             blocks[b].magic = BANK_MAGIC;
             blk_dirty[b] = 1;            /* written in the new form at the next SAVE */
         } else if (blocks[b].magic != BANK_MAGIC) {
@@ -233,7 +240,8 @@ void app_init(void)
 /* ----------------------------------------------------------------- audio --- */
 static volatile uint8_t ui_poke;
 static volatile int pc_pending = -1;
-static volatile int cc_bright;           /* CC 74: added to the cutoff */
+static volatile int cc_bright;
+static volatile int morph_in = -1;       /* CC 16: MORPH, for the screen */           /* CC 74: added to the cutoff */
 
 static void param_in(int i, int v)       /* a parameter from MIDI */
 {
@@ -263,6 +271,7 @@ static void cc_in(uint32_t cc, uint32_t v)
     case 1: tri_mod((int)v); return;
     case 64: tri_sustain(v >= 64u); return;
     case 74: cc_bright = (int)v; return;
+    case 16: tri_morph((int)v); morph_in = (int)v; return;   /* MORPH from MIDI: the panel's ALGORITHM knob */
     case 76: edit.pitch2 = tri_patch()->pitch2 = (int16_t)(((int)v - 64) * 700 / 63); edit_dirty = ui_poke = 1; return;
     case 83: edit.pitch3 = tri_patch()->pitch3 = (int16_t)(((int)v - 64) * 700 / 63); edit_dirty = ui_poke = 1; return;
     case 120: case 123: tri_all_off(); return;
@@ -428,7 +437,9 @@ static struct {
     uint32_t turned_at[4];
     uint32_t knob_t[4];
     uint8_t redraw;
-    uint8_t mslot;                       /* the mod matrix slot on show, 0..3 */
+    uint8_t mslot;                       /* the mod matrix slot on show, 0..7 */
+    uint8_t morph;                       /* MORPH, the ALGORITHM knob: 0..127, not saved (a performance control) */
+    uint8_t oct_jumped;                  /* PRESETS turned while OCT- / OCT+ was held: no octave change on release */
     uint8_t press;                       /* the keys' pressure, as last sent */
 } ui;
 
@@ -866,6 +877,23 @@ static void play_button(void)
     app_say("CHORD", "PLAY IT");
 }
 
+/* MORPH: to the engine and out as CC 16; shown with what it does (a patch with no MORPH route: nothing) */
+static void send_cc(uint32_t cc, uint32_t v);
+static void morph_set(int v, int from_panel)
+{
+    char t[16];
+    v = clamp(v, 0, 127);
+    ui.morph = (uint8_t)v;
+    tri_morph(v);
+    if (!from_panel)
+        return;
+    send_cc(16u, (uint32_t)v);
+    int_text(v, t);
+    if (!tri_uses(MS_MORPH))
+        text_cat(t, " NO ROUTE");
+    app_say("MORPH", t);
+}
+
 static void input(void)
 {
     static const uint8_t EDIT_P[] = {PG_OSC1, PG_OSC2, PG_OSC3, PG_OSCX}, SEL_P[] = {PG_FILT, PG_FILT2},
@@ -905,13 +933,15 @@ static void input(void)
             plat_midi_send(0x0Du | (0xD0u | midi_out_ch()) << 8 | pmax << 16, TO_USB | TO_BLE);
         }
     }
+    for (k = B_OCTDN; k <= B_OCTUP; k++)  /* OCT- / OCT+ let go: the octave, unless PRESETS jumped meanwhile */
+        if (!(btn >> k & 1u) && (ui.btn >> k & 1u) && !ui.oct_jumped)
+            octave_step(k == B_OCTUP ? 1 : -1);
     for (k = 0; k < NB; k++) {
         uint32_t bit = 1u << k;
         if (!(btn & bit) || (ui.btn & bit))
             continue;
         switch (k) {
-        case B_OCTDN: octave_step(-1); break;
-        case B_OCTUP: octave_step(1); break;
+        case B_OCTDN: case B_OCTUP: ui.oct_jumped = 0; break;   /* the octave on release (held: PRESETS +-10) */
         case B_HOME: page_cycle(HOME_P, 1); break;
         case B_EDIT: page_cycle(EDIT_P, 4); break;
         case B_SEL: page_cycle(SEL_P, 2); break;
@@ -951,9 +981,17 @@ static void input(void)
         ui.mslot = (uint8_t)clamp(ui.mslot + e, 0, TRI_MM_SLOTS - 1);
         ui.turned_at[0] = now;
         ui.redraw = 1;
-        e = 0;
+    } else if (e) {                      /* ALGO elsewhere: MORPH, a macro the patch's routes give a meaning */
+        static uint32_t morph_t;
+        uint32_t dt = now - morph_t;
+        morph_set(ui.morph + e * (dt < 40u ? 4 : dt < 100u ? 2 : 1), 1);
+        morph_t = now;
     }
-    if ((e = 10 * e) != 0 || (e = plat_enc(EN_PRESET)) != 0) {   /* PRESET: the patches; ALGO: ten at a time */
+    if ((e = plat_enc(EN_PRESET)) != 0) {   /* PRESET: the patches; with OCT- or OCT+ held, ten at a time */
+        if (btn & (1u << B_OCTDN | 1u << B_OCTUP)) {
+            e *= 10;
+            ui.oct_jumped = 1;
+        }
         patch_select(set.patch + e);
         plat_midi_send(0x0Cu | (0xC0u | midi_out_ch()) << 8 | (uint32_t)set.patch << 16, TO_USB | TO_BLE);
     }
@@ -1294,6 +1332,10 @@ void app_frame(void)
         ui_poke = 0;
         ui.redraw = 1;
     }
+    if (morph_in >= 0) {
+        ui.morph = (uint8_t)morph_in;
+        morph_in = -1;
+    }
     if (was_learning && !tri_learning()) {   /* a chord learnt: UNISON is now CHORD */
         tri_patch_t *ep = tri_patch();
         int i;
@@ -1346,6 +1388,8 @@ int app_expect(const char *what, int *got)
         *got = tri_patch()->chord_n;
     else if (!strcmp(what, "pitch2"))
         *got = edit.pitch2;
+    else if (!strcmp(what, "morph"))
+        *got = ui.morph;
     else if (!strncmp(what, "mm", 2) && what[2] >= '0' && what[2] < '0' + TRI_MM_SLOTS) {   /* mm0src, mm0dst, mm0amt */
         const tri_route_t *r = &tri_patch()->mm[what[2] - '0'];
         *got = !strcmp(what + 3, "src") ? r->src : !strcmp(what + 3, "dst") ? r->dst : r->amt;
