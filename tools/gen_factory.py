@@ -146,8 +146,106 @@ P("PRESS LEAD", "o2lvl=95 p2=12 o3lvl=60 o3oct=4 cut=74 res=25 fenv=82 fd=70 fs=
 P("SLOW ATTACK", "o2lvl=90 p2=9 cut=52 res=15 fenv=80 fa=40 fd=100 fs=90 fr=95 aa=40 ad=100 as=120 ar=98 vint=50 pan=90 fxa=cho amix=40 fxb=hall bmix=40 bp1=90 m1=vel:attack:-50 m2=key:attack:-20 m3=rand:pitch2:10 m4=vel:amp:20 m5=morph:attack:50", C)
 P("MORPH PAD", "o1wave=S o2wave=T o2oct=3 o2lvl=0 p2=5 o3lvl=0 cut=42 res=20 fenv=74 fa=80 fd=95 fs=90 fr=95 aa=80 ad=95 as=120 ar=95 lfreq=40 lamt=8 lpw=1 vint=45 pan=100 fxa=cho amix=40 fxb=hall bmix=25 bp1=95 m1=morph:cutoff:30 m2=morph:lvl2:55 m3=morph:bmix:35 m4=morph:lforate:20 m5=morph:attack:-20 m6=vel:cutoff:15", C)
 
+# the 49 patches that fill the bank to 128 (0.3), by category; each uses what TRI-6's engine has: three oscillators,
+# sync, poly mod, feedback / drive, the 2 / 4 pole ladder, vintage, unison, the matrix and MORPH, two effects
+NEW = {
+"Brass": [
+ ("BRASS STACK", "o1wave=S o2lvl=95 p2=9 o3oct=3 o3lvl=80 p3=-11 cut=48 res=16 fenv=94 fa=48 fd=80 fs=70 fr=56 aa=40 ad=80 as=118 ar=58 fvel=1 uni=3 keymode=2 vint=40 pan=90 fxa=cho amix=25 fxb=hall bmix=28 bp1=70"),
+ ("PM BRASS", "o2lvl=90 p2=5 o3oct=4 o3wave=T o3lvl=0 pmf=78 pmpitch=2 cut=50 res=18 fenv=92 fa=44 fd=76 fs=68 fr=55 aa=36 ad=78 as=115 ar=58 fvel=1 vint=30 pan=60 fxb=room bmix=24"),
+ ("BRASS 2POLE", "o1wave=S+P o1pw=48 o2lvl=85 p2=7 pole2=1 cut=46 res=30 fenv=96 fa=40 fd=78 fs=60 fr=55 aa=30 ad=78 as=115 ar=55 fvel=1 vint=35 pan=70 fxb=plate bmix=22 bp1=70"),
+ ("FANFARE", "o2lvl=90 p2=6 o2oct=3 o3lvl=70 o3oct=3 p3=700 cut=60 res=20 fenv=100 fa=30 fd=70 fs=75 fr=60 aa=24 ad=75 as=118 ar=60 fvel=1 vint=30 pan=80 fxb=hall bmix=30 bp1=80"),
+ ("MUTED HORN", "o1wave=S+T o2lvl=70 p2=4 pole2=1 cut=34 res=12 fenv=84 fkey=2 fa=60 fd=85 fs=75 fr=65 aa=50 ad=85 as=115 ar=65 fvel=1 vint=30 pan=40 fxb=room bmix=26 m1=vel:cutoff:28"),
+],
+"Pads": [
+ ("TRIGON PAD", "o1wave=T+S o2wave=T+S o2lvl=90 p2=8 o3wave=R o3lvl=70 p3=-9 cut=58 res=20 fenv=72 fa=90 fd=100 fs=90 fr=100 aa=90 ad=100 as=120 ar=100 lfreq=36 lamt=10 lpw=7 vint=70 pan=120 fxa=cho amix=40 ap1=30 ap2=70 fxb=hall bmix=42 bp1=100"),
+ ("FDBK PAD", "o1wave=S o2lvl=85 p2=7 fdrv=34 cut=52 res=35 fenv=74 fa=95 fd=100 fs=90 fr=100 aa=95 ad=100 as=120 ar=100 lfreq=28 lamt=20 lfilt=1 vint=50 pan=110 fxa=ph1 amix=35 ap1=20 ap2=70 fxb=hall bmix=40 bp1=100"),
+ ("SYNC PAD", "o1lvl=50 o2lvl=95 o2oct=3 sync=1 p2=300 cut=64 res=20 fenv=70 fa=90 fd=100 fs=90 fr=100 aa=90 ad=100 as=120 ar=100 vint=40 pan=110 fxa=cho amix=40 fxb=plate bmix=45 bp1=100 m1=lfo:pitch2:30 m2=osc3:pitch2:12 o3oct=0 o3key=0 o3lvl=0 lfreq=22"),
+ ("AIR PAD", "o1wave=T o2wave=T o2oct=3 o2lvl=50 noise=40 cut=70 res=60 fenv=70 fkey=2 fa=100 fd=100 fs=90 fr=110 aa=100 ad=100 as=120 ar=110 lfreq=20 lamt=30 lfilt=1 vint=40 pan=127 fxa=cho amix=20 fxb=hall bmix=55 bp1=110 bp2=70"),
+ ("ICE PAD", "o1wave=T o1oct=3 o2wave=P o2pw=20 o2lvl=60 p2=1200 o3wave=R o3oct=4 o3lvl=50 p3=5 cut=80 res=30 fenv=70 fa=80 fd=90 fs=60 fr=100 aa=80 ad=90 as=115 ar=105 vint=35 pan=120 fxa=fl1 amix=30 ap1=15 ap2=60 fxb=plate bmix=50 bp1=105"),
+],
+"Strings": [
+ ("STRING MACH", "o1wave=S+P o1pw=40 o2wave=S o2lvl=90 p2=6 o2oct=3 cut=72 res=4 fenv=64 fa=70 fd=90 fs=95 fr=85 aa=72 ad=90 as=120 ar=88 lfreq=50 lamt=36 lpw=1 vint=55 pan=127 fxa=cho amix=70 ap1=60 ap2=110 fxb=hall bmix=30"),
+ ("VIOLINS", "o1wave=S o1oct=3 o2lvl=90 o2oct=3 p2=9 cut=70 res=10 fenv=74 fkey=2 fa=60 fd=90 fs=90 fr=80 aa=66 ad=90 as=120 ar=80 lfreq=60 lamt=0 lpitch=3 vint=50 pan=110 fxa=cho amix=40 fxb=hall bmix=34 m1=aenv:lfoamt:20 m2=modw:lfoamt:40"),
+ ("BOW STRINGS", "o2lvl=95 p2=8 o3lvl=60 o3oct=2 cut=58 res=8 fenv=72 fa=80 fd=95 fs=90 fr=90 aa=82 ad=95 as=120 ar=92 lfreq=56 lamt=10 lpitch=7 vint=55 pan=110 fxa=cho amix=50 fxb=hall bmix=38 m1=vel:attack:-40 m2=vel:cutoff:20"),
+ ("PIZZICATO", "o1wave=S o2lvl=85 p2=7 cut=54 res=10 fenv=96 fkey=2 fd=58 fs=0 fr=50 ad=70 as=0 ar=60 fvel=1 vint=35 pan=110 fxb=hall bmix=34 bp1=80"),
+ ("OCTAVE STRS", "o1wave=S o2wave=S o2oct=3 o2lvl=85 p2=6 o3oct=2 o3lvl=70 p3=-6 cut=62 res=6 fenv=70 fa=70 fd=90 fs=90 fr=85 aa=74 ad=90 as=120 ar=86 lfreq=54 lamt=12 lpitch=7 vint=55 pan=120 fxa=cho amix=50 fxb=hall bmix=34"),
+ ("DARK STRING", "o1oct=1 o2oct=2 o2lvl=90 p2=8 pole2=1 cut=44 res=10 fenv=70 fa=85 fd=95 fs=90 fr=95 aa=85 ad=95 as=120 ar=98 lfreq=50 lamt=10 lpitch=7 vint=60 pan=110 fxa=cho amix=45 fxb=hall bmix=42 bp1=100"),
+],
+"Keys": [
+ ("EP TINE", "o1wave=T o3wave=T o3oct=5 o3lvl=0 p3=0 pm3=82 pmpitch=1 cut=80 res=0 fenv=74 fd=86 fs=10 fr=70 ad=104 as=0 ar=76 fvel=1 vint=20 pan=70 lfreq=70 lamt=20 lamp=1 fxa=cho amix=30 fxb=room bmix=25 m1=vel:pitch1:4"),
+ ("WURLY", "o1wave=P o1pw=56 o2wave=T o2lvl=50 fdrv=84 cut=60 res=10 fenv=84 fd=80 fs=20 fr=60 ad=96 as=0 ar=66 fvel=1 vint=20 pan=60 lfreq=66 lamt=30 lamp=1 fxa=ph3 amix=25 ap1=30 ap2=60 fxb=room bmix=22"),
+ ("HARPSICHORD", "o1wave=P o1pw=24 o2wave=S o2oct=3 o2lvl=60 p2=3 cut=84 res=20 fenv=90 fkey=2 fd=60 fs=10 fr=50 ad=80 as=0 ar=50 fvel=0 vint=10 pan=40 fxb=room bmix=24"),
+ ("PERC ORGAN", "o1wave=T o2wave=T o2oct=3 o2lvl=80 o3wave=T o3oct=5 o3lvl=50 cut=100 res=0 fkey=2 fenv=80 fd=40 fs=60 aa=0 ad=60 as=127 ar=18 avel=0 vint=15 fxa=ph3 amix=35 ap1=60 ap2=70 fxb=room bmix=20 m1=aenv:lvl3:30"),
+ ("SYNC KEYS", "o1lvl=40 o2lvl=95 o2oct=3 sync=1 pmf=96 pmpitch=2 cut=72 res=15 fenv=84 fd=74 fs=10 fr=60 ad=94 as=0 ar=66 fvel=1 vint=20 pan=60 fxa=cho amix=30 fxb=room bmix=25"),
+ ("TOY PIANO", "o1wave=T o1oct=3 o3wave=T o3oct=5 o3lvl=0 p3=500 pm3=96 pmpitch=1 cut=96 res=0 fenv=70 fd=56 fs=0 fr=50 ad=74 as=0 ar=60 fvel=1 vint=25 pan=60 fxb=plate bmix=30 bp1=60"),
+],
+"Bass": [
+ ("SYNC BASS", "o1oct=1 o1lvl=50 o2oct=2 o2lvl=100 sync=1 pmf=100 pmpitch=2 cut=50 res=20 fenv=96 fd=60 fs=30 fr=34 ad=70 as=110 ar=30 uni=1 vint=10 pan=0 fx=0"),
+ ("GROWL BASS", "o1oct=1 o1wave=S+P o2oct=1 o2lvl=90 p2=-8 fdrv=104 cut=44 res=50 fenv=90 fd=64 fs=40 fr=34 ad=70 as=115 ar=30 lfreq=72 lamt=24 lfilt=1 uni=1 dist=35 vint=15 pan=0 fx=0"),
+ ("REESE BASS", "o1oct=1 o2oct=1 o2lvl=100 p2=22 o3oct=2 o3lvl=60 p3=-18 cut=48 res=20 fenv=74 fd=70 fs=80 fr=34 ad=70 as=118 ar=34 uni=2 vint=40 pan=30 fdrv=80 fx=0"),
+ ("FUNK BASS", "o1oct=1 o1wave=P o1pw=30 o2oct=1 o2lvl=60 cut=46 res=50 fenv=100 fd=48 fs=0 fr=30 ad=60 as=60 ar=26 fvel=1 uni=1 vint=10 pan=0 fx=0"),
+ ("DUB BASS", "o1oct=0 o1wave=T o2oct=1 o2wave=S o2lvl=30 pole2=1 cut=30 res=20 fenv=74 fd=70 fs=60 fr=40 ad=80 as=118 ar=40 uni=1 glide=1 grate=40 gmode=1 vint=15 pan=0 fx=1 fxa=bbd amix=15 ap1=70 ap2=40 async=1"),
+],
+"Leads": [
+ ("OCTAVE LEAD", "o2lvl=90 o2oct=3 p2=6 o3lvl=70 o3oct=2 cut=78 res=22 fenv=80 fd=72 fs=80 fr=50 ad=80 as=120 ar=46 uni=1 glide=1 grate=48 vint=25 pan=0 lfreq=70 lamt=14 lpitch=7 fxa=ddl amix=25 ap1=70 ap2=50 async=1 fxb=hall bmix=20"),
+ ("PWM LEAD", "o1wave=P o2wave=P o2lvl=90 p2=8 cut=76 res=20 fenv=78 fd=72 fs=80 fr=50 as=120 ar=46 lfreq=62 lamt=50 lpw=3 uni=1 glide=1 grate=46 vint=20 pan=0 fxa=cho amix=30 fxb=room bmix=20"),
+ ("SYNC SWEEP", "o1lvl=30 o2lvl=100 o2oct=3 sync=1 pmf=110 pmpitch=2 cut=88 res=24 fenv=80 fa=30 fd=100 fs=60 fr=50 ad=80 as=120 ar=46 uni=2 glide=1 grate=55 vint=30 pan=40 fxa=ddl amix=25 ap1=70 ap2=55 async=1 fxb=hall bmix=22 m1=modw:pitch2:30"),
+ ("WHISTLE", "o1wave=T o1oct=3 o2lvl=0 noise=10 pole2=1 cut=90 res=40 fenv=70 fkey=2 fa=40 fd=80 fs=80 aa=40 ad=80 as=120 ar=50 lfreq=68 lamt=16 lpitch=7 uni=1 glide=1 grate=36 vint=15 pan=0 fxb=hall bmix=30"),
+ ("DRIVE LEAD", "o1wave=S+P o2lvl=95 p2=10 fdrv=110 cut=66 res=40 fenv=84 fd=80 fs=70 fr=50 as=120 ar=46 dist=40 uni=2 glide=1 grate=50 vint=25 pan=20 lfreq=70 lamt=14 lpitch=7 fxa=ddl amix=20 ap1=70 ap2=45 async=1 fxb=room bmix=18"),
+],
+"Plucks and mallets": [
+ ("NYLON", "o1wave=T+S o2wave=P o2pw=40 o2lvl=40 cut=58 res=10 fenv=94 fkey=2 fd=72 fs=0 fr=70 ad=96 as=0 ar=80 fvel=1 vint=20 pan=60 fxb=room bmix=28 bp1=70"),
+ ("BELL PLUCK", "o1wave=T o3wave=T o3oct=5 o3lvl=0 p3=386 pm3=88 pmpitch=1 cut=88 fenv=78 fd=86 fs=0 fr=90 ad=104 as=0 ar=96 fvel=1 vint=15 pan=90 fxa=cho amix=25 fxb=plate bmix=40 bp1=95"),
+ ("MUSIC BOX", "o1wave=T o1oct=4 o2wave=T o2oct=4 o2lvl=40 p2=10 cut=100 fenv=64 fd=70 fs=0 fr=70 ad=92 as=0 ar=80 vint=20 pan=80 fxa=cho amix=20 fxb=plate bmix=40 bp1=90"),
+ ("SYNC PLUCK", "o1lvl=40 o2lvl=95 o2oct=3 sync=1 pmf=110 pmpitch=2 cut=70 res=20 fenv=96 fd=56 fs=0 fr=50 ad=74 as=0 ar=56 fvel=1 vint=20 pan=80 fxa=ddl amix=25 ap1=60 ap2=40 async=1 fxb=room bmix=25"),
+],
+"Poly mod and effects": [
+ ("DRONE", "o1oct=1 o1wave=S o2oct=1 o2lvl=90 p2=702 o3oct=0 o3key=0 o3lvl=0 p3=-600 pm3=70 pmpw=1 cut=50 res=50 fenv=64 aa=110 ad=100 as=127 ar=120 lfreq=12 lamt=30 lfilt=1 vint=80 pan=127 fxa=ph2 amix=40 ap1=10 ap2=90 fxb=hall bmix=55 bp1=115 m1=osc3:cutoff:15"),
+ ("RISER", "o1wave=S o2lvl=90 p2=12 noise=40 cut=20 res=80 fenv=120 fa=125 fd=100 fs=127 fr=90 aa=110 ad=100 as=127 ar=90 vint=30 pan=127 fxa=fl2 amix=50 ap1=10 ap2=90 fxb=hall bmix=50 bp1=110 m1=fenv:pitch:6 m2=fenv:lforate:30"),
+ ("ALARM", "o1wave=P o1oct=3 o3oct=0 o3key=0 o3lvl=0 o3wave=S p3=500 cut=90 res=20 fenv=64 ad=60 as=127 ar=30 vint=0 pan=0 fxb=room bmix=20 m1=osc3:pitch1:40"),
+ ("SCI-FI", "o1wave=T o1oct=3 o3oct=0 o3key=0 o3wave=S+P o3lvl=0 p3=200 cut=80 res=70 fenv=64 ad=80 as=120 ar=80 lfreq=90 lshape=4 vint=30 pan=100 fxa=ring amix=40 ap1=60 ap2=100 fxb=plate bmix=45 m1=osc3:pitch1:30 m2=lfo:cutoff:30 m3=rand:pan:50"),
+],
+"Chords": [
+ ("MAJOR 7", "o1wave=S o2wave=T o2lvl=70 p2=6 cut=56 res=15 fenv=84 fa=30 fd=80 fs=50 fr=70 aa=20 ad=80 as=110 ar=70 vint=40 pan=110 chord=0,4,7,11 fxa=cho amix=40 fxb=hall bmix=35"),
+ ("SUS4", "o1wave=S+P o1pw=40 o2lvl=85 p2=8 cut=56 res=25 fenv=92 fd=62 fs=20 fr=50 ad=74 as=50 ar=50 fvel=1 vint=35 pan=110 chord=0,5,7,12 fxa=cho amix=30 fxb=plate bmix=30"),
+ ("POWER CHORD", "o1wave=S o2lvl=90 p2=10 fdrv=106 cut=56 res=20 fenv=86 fd=80 fs=70 fr=50 ad=80 as=118 ar=50 dist=50 vint=30 pan=60 chord=0,7,12 fxb=room bmix=24"),
+ ("HOUSE STAB", "o1wave=S o2lvl=80 p2=5 o2wave=P cut=60 res=30 fenv=96 fd=54 fs=0 fr=44 ad=66 as=0 ar=50 fvel=1 vint=30 pan=100 chord=0,3,7,10 fxa=ddl amix=25 ap1=64 ap2=45 async=1 fxb=room bmix=25"),
+ ("DUB CHORD", "o1wave=S+P o1pw=40 o2lvl=85 p2=6 cut=60 res=30 fenv=90 fd=66 fs=0 fr=60 ad=86 as=0 ar=80 vint=40 pan=90 chord=0,3,7 fxa=bbd amix=40 ap1=80 ap2=70 async=1 fxb=spring bmix=35"),
+],
+"Arpeggios": [
+ ("ARP PWM", "o1wave=P o2wave=P o2lvl=80 p2=7 cut=60 res=30 fenv=90 fd=50 fs=0 fr=40 ad=60 as=0 ar=40 lfreq=40 lamt=50 lpw=3 vint=20 pan=80 arp=1 amode=2 aoct=1 adiv=6 bpm=118 fxa=cho amix=30 fxb=room bmix=25"),
+ ("ARP TRIGON", "o1wave=T+S o2wave=T o2oct=3 o2lvl=60 o3wave=R o3lvl=50 p3=12 cut=66 res=40 fenv=90 fd=56 fs=0 fr=50 ad=66 as=0 ar=50 vint=40 pan=110 arp=1 amode=4 aoct=1 adiv=8 bpm=112 fxa=ddl amix=30 ap1=64 ap2=55 async=1 fxb=hall bmix=30 m1=rand:cutoff:18"),
+],
+"Voices": [
+ ("AAH VOICES", "o1wave=S o2wave=S o2lvl=85 p2=-6 noise=6 pole2=1 cut=60 res=70 fenv=66 fkey=2 fa=70 fd=90 fs=90 fr=90 aa=74 ad=90 as=118 ar=90 lfreq=52 lamt=14 lpitch=7 vint=60 pan=120 fxa=cho amix=50 fxb=hall bmix=45 bp1=95"),
+ ("OOH CHOIR", "o1wave=T o2wave=P o2pw=40 o2lvl=60 p2=7 noise=4 pole2=1 cut=46 res=60 fenv=66 fkey=2 fa=80 fd=95 fs=90 fr=95 aa=82 ad=95 as=118 ar=95 lfreq=50 lamt=12 lpitch=7 vint=65 pan=120 fxa=cho amix=55 fxb=hall bmix=50 bp1=100"),
+],
+}
+# MORPH on every patch that has no route from it: a sensible move per kind (two routes, in slots 8 and 7)
+CAT_MORPH = {
+ "Brass": ["morph:cutoff:25", "morph:attack:-15"], "Pads": ["morph:cutoff:22", "morph:bmix:30"],
+ "Strings": ["morph:cutoff:20", "morph:lfoamt:25"], "Keys": ["morph:cutoff:25", "morph:decay:25"],
+ "Bass": ["morph:fdrv:35", "morph:cutoff:15"], "Leads": ["morph:lfoamt:30", "morph:fdrv:20"],
+ "Plucks and mallets": ["morph:decay:35", "morph:cutoff:15"], "Poly mod and effects": ["morph:res:25", "morph:lforate:30"],
+ "Chords": ["morph:cutoff:25", "morph:amix:25"], "Arpeggios": ["morph:cutoff:25", "morph:decay:25"],
+ "Voices": ["morph:cutoff:20", "morph:bmix:30"], "Mod matrix": ["morph:cutoff:20"],
+}
+
+for cat, pats in NEW.items():
+    for name, spec in pats:
+        P(name, spec, cat)
+# the bank by kind: each category's patches together, in the order the categories first come (Mod matrix last)
+ORDER = list(dict.fromkeys(b[3] for b in B))
+B.sort(key=lambda b: ORDER.index(b[3]))
+for name, v, e, cat in B:
+    if cat in CAT_MORPH and not any(m[0] == MSRC.index("morph") for m in e["mm"]):
+        free = [i for i, m in enumerate(e["mm"]) if m[0] == 0 and m[1] == 0][::-1]   # from slot 8 down: 1.. stay free
+        for r, i in zip(CAT_MORPH[cat], free):
+            a, b, c = r.split(":")
+            e["mm"][i] = [MSRC.index(a), MDST.index(b), 64 + int(c)]
+
 # each patch's VOLUME, from the demo renders' loudness (tools/gen_demo.py), so the bank plays at one level
-LEVEL = {"INIT": 87, "BRASS SECT": 92, "SYNTH HORN": 98, "SOFT BRASS": 94, "BRASS SWELL": 98, "BRIGHT STAB": 99, "SYNC BRASS": 94, "WARM PAD": 99, "GLASS PAD": 102, "DARK PAD": 104, "SLOW BLOOM": 102, "PWM PAD": 95, "SPACE PAD": 98, "DRIFT PAD": 97, "CRYSTAL PAD": 104, "STRINGS": 99, "SLOW STRING": 107, "ENSEMBLE": 95, "CELLO SECT": 92, "SOFT KEYS": 108, "BELL KEYS": 107, "CLAV": 106, "POLY PIANO": 98, "VIBES": 103, "ORGAN": 83, "FAT BASS": 106, "SUB BASS": 102, "ACID BASS": 100, "UNISON BASS": 89, "PLUCK BASS": 112, "FM BASS": 106, "DRIVE BASS": 77, "WOBBLE BASS": 79, "SYNC LEAD": 106, "SAW LEAD": 99, "SQUARE LEAD": 105, "SCREAM LEAD": 81, "GLIDE LEAD": 113, "FEEDBACK LD": 88, "SOLO FLUTE": 113, "PM LEAD": 113, "PLUCK": 112, "MALLET": 110, "KALIMBA": 112, "HARP": 109, "STEEL DRUM": 108, "MARIMBA": 112, "METAL BELL": 100, "CHAOS": 80, "SWEEP FX": 105, "LASER": 126, "NOISE WIND": 127, "RING BELL": 110, "CHORD STAB": 118, "MINOR 9": 100, "FIFTHS": 97, "ARP PLUCK": 127, "ARP SEQ": 126, "ARP BELLS": 127, "ARP BASS": 123, "ARP DRIVE": 89, "ARP SYNC": 127, "ARP RANDOM": 127, "ARP DREAM": 125, "CHOIR": 99, "VOCAL PAD": 104, "TWO LFOS": 92}
+LEVEL = {"INIT": 87, "BRASS SECT": 92, "SYNTH HORN": 98, "SOFT BRASS": 94, "BRASS SWELL": 98, "BRIGHT STAB": 99, "SYNC BRASS": 94, "WARM PAD": 99, "GLASS PAD": 102, "DARK PAD": 104, "SLOW BLOOM": 102, "PWM PAD": 95, "SPACE PAD": 98, "DRIFT PAD": 97, "CRYSTAL PAD": 104, "STRINGS": 99, "SLOW STRING": 107, "ENSEMBLE": 95, "CELLO SECT": 92, "SOFT KEYS": 108, "BELL KEYS": 107, "CLAV": 106, "POLY PIANO": 98, "VIBES": 103, "ORGAN": 83, "FAT BASS": 106, "SUB BASS": 102, "ACID BASS": 100, "UNISON BASS": 89, "PLUCK BASS": 112, "FM BASS": 106, "DRIVE BASS": 77, "WOBBLE BASS": 79, "SYNC LEAD": 106, "SAW LEAD": 99, "SQUARE LEAD": 105, "SCREAM LEAD": 81, "GLIDE LEAD": 113, "FEEDBACK LD": 88, "SOLO FLUTE": 113, "PM LEAD": 113, "PLUCK": 112, "MALLET": 110, "KALIMBA": 112, "HARP": 109, "STEEL DRUM": 108, "MARIMBA": 112, "METAL BELL": 100, "CHAOS": 80, "SWEEP FX": 105, "LASER": 126, "NOISE WIND": 127, "RING BELL": 110, "CHORD STAB": 118, "MINOR 9": 100, "FIFTHS": 97, "ARP PLUCK": 127, "ARP SEQ": 126, "ARP BELLS": 127, "ARP BASS": 123, "ARP DRIVE": 89, "ARP SYNC": 127, "ARP RANDOM": 127, "ARP DREAM": 125, "CHOIR": 99, "VOCAL PAD": 104, "TWO LFOS": 92, "BRASS STACK": 101, "PM BRASS": 92, "BRASS 2POLE": 95, "FANFARE": 91, "MUTED HORN": 88, "TRIGON PAD": 97, "FDBK PAD": 97, "SYNC PAD": 107, "AIR PAD": 106, "ICE PAD": 97, "STRING MACH": 105, "VIOLINS": 102, "BOW STRINGS": 96, "PIZZICATO": 121, "OCTAVE STRS": 103, "DARK STRING": 108, "EP TINE": 104, "WURLY": 97, "HARPSICHORD": 107, "PERC ORGAN": 75, "SYNC KEYS": 114, "TOY PIANO": 119, "SYNC BASS": 107, "GROWL BASS": 79, "REESE BASS": 91, "FUNK BASS": 118, "DUB BASS": 110, "OCTAVE LEAD": 108, "PWM LEAD": 101, "SYNC SWEEP": 109, "WHISTLE": 116, "DRIVE LEAD": 83, "NYLON": 93, "BELL PLUCK": 88, "MUSIC BOX": 99, "SYNC PLUCK": 115, "DRONE": 108, "RISER": 115, "ALARM": 81, "SCI-FI": 111, "MAJOR 7": 107, "SUS4": 122, "POWER CHORD": 80, "HOUSE STAB": 118, "DUB CHORD": 123, "ARP PWM": 116, "ARP TRIGON": 119, "AAH VOICES": 103, "OOH CHOIR": 106, "VELO BRASS": 84, "PRESS PAD": 99, "KEY PIANO": 88, "OSC3 WOBBLE": 93, "RAND PLUCK": 121, "S+H SWEEP": 99, "ENV PWM KEY": 91, "BEND GROWL": 91, "WHEEL MORPH": 104, "PRESS LEAD": 97, "SLOW ATTACK": 91, "MORPH PAD": 99}
 for i, (name, v, e, cat) in enumerate(B):
     if name in LEVEL and 'vol=' not in SPEC[name]:
         v[K.index('vol')] = LEVEL[name]
@@ -159,8 +257,10 @@ with open("app/factory.h", "w") as f:
         f.write('{"%s", {%s}, %d, %d, %d, {%s}, {%s}},\n' % (name, ", ".join(str(x) for x in v), e["p2"], e["p3"],
                 len(e["chord"]), ", ".join(str(x) for x in ch), ", ".join("{%d, %d, %d}" % tuple(m) for m in e["mm"])))
 with open("PRESETS.md", "w") as f:
-    f.write("# TRI-6 FM-1 factory bank\n\nPatches 000 to %03d were made for this firmware; the rest of the 128 slots "
-            "start as INIT.\n" % (len(B) - 1))
+    f.write("# TRI-6 FM-1 factory bank\n\n%d patches, 000 to %03d, laid out by kind. Every patch was made for this "
+            "firmware; none is copied from any instrument's presets. Every patch but INIT has a MORPH route (the "
+            "ALGORITHM knob): the mod matrix patches their own, the others a move that suits their kind.\n"
+            % (len(B), len(B) - 1))
     last = None
     for i, (name, v, e, cat) in enumerate(B):
         if cat != last:

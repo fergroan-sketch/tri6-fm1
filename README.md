@@ -78,11 +78,13 @@ written as its waves: T(ri), S(aw), P(ulse), R(everse saw), for example S+P.
 PRESET: next/previous patch; with OCT- or OCT+ held, ten at a time (the octave then stays as it was). ALGO: MORPH, a
 macro knob (below; on the MOD MATRIX page, the slot). SELECT: through every page in turn, HOME to ARPEGGIATOR. SAVE:
 store the patch (lit when edited).
-OCT-/OCT+: octave, when let go. REC held a second: Bluetooth on/off. 128 patches, 000 to 127; 000 to 078 are factory
-patches made for this firmware (see PRESETS.md), the rest start as INIT.
+OCT-/OCT+: octave, when let go. REC held a second: Bluetooth on/off. 128 patches, 000 to 127, all factory patches
+made for this firmware and laid out by kind (PRESETS.md): INIT, brass, pads, strings, keys, bass, leads, plucks and
+mallets, poly mod and effects, chords, arpeggios, voices, and the mod matrix patches (115 to 127). Each has a MORPH
+route; the levels are matched from renders of every patch (tools/gen_demo.py).
 
 **MORPH** is the ALGORITHM knob, and MIDI CC 16 (in and out): one knob, 0 to 127, whose meaning is the patch's. It is a
-mod matrix source, so a patch routes it wherever it likes (MORPH PAD, 078, opens the filter, brings in OSC 2, adds
+mod matrix source, so a patch routes it wherever it likes (MORPH PAD, 127, opens the filter, brings in OSC 2, adds
 reverb and speeds the LFO with it). It is not saved: like the mod wheel, it stays where it is when the patch changes.
 Turning it shows its value, and NO ROUTE when the patch has no route from it.
 
@@ -111,7 +113,7 @@ before the matrix existed has them all OFF, and a bank saved by 0.2 (four routes
 Factory patches with routes: BRASS SECT (pressure to cutoff, velocity shortens the attack), WARM PAD and ARP RANDOM
 (a random pan a note), DRIFT PAD, STRINGS, CLAV, POLY PIANO and HARP (velocity to cutoff, higher keys decay sooner),
 WOBBLE BASS (wheel to LFO rate), the leads (pressure vibrato or brightness), SOLO FLUTE (velocity to breath noise),
-CHAOS, VOCAL PAD, and 066 TWO LFOS (OSC 3 at LO as a second LFO on pulse width and cutoff).
+CHAOS, VOCAL PAD, and 115 TWO LFOS (OSC 3 at LO as a second LFO on pulse width and cutoff).
 
 ## The boot screen
 
