@@ -9,9 +9,9 @@
  * then:       sum -> distortion (stereo) -> effect A -> effect B -> program volume -> out
  *
  * Poly mod takes OSC 3 (at audio rate) and the filter envelope to the oscillators' pitch, OSCs 1 and 2's pulse width,
- * the feedback and the cutoff. The mod matrix (four routes a patch) adds control-rate sources (LFO, the envelopes,
- * velocity, the mod wheel, pressure, the key, a random value a note, bend) to most of the voice and to the LFO and the
- * effects' mix. Control-rate parts (envelopes, LFO, pitch, the arpeggiator) run every CR samples;
+ * the feedback and the cutoff. The mod matrix (eight routes a patch) adds control-rate sources (LFO, the envelopes,
+ * velocity, the mod wheel, pressure, the key, a random value a note, bend, OSC 3) to most of the voice, its envelopes'
+ * times, and to the LFO and the effects' mix and P1. Control-rate parts (envelopes, LFO, pitch, the arpeggiator) run every CR samples;
  * cutoff and gain are ramped across each block. With two cores the second renders voices 4 to 6. */
 #include "tri6.h"
 #include "fastmath.h"
@@ -41,10 +41,11 @@ const uint8_t TRI_MAX[TP_N] = {
 };
 const uint8_t TRI_MIN[TP_N] = {[TP_O1_WAVE] = 1, [TP_O2_WAVE] = 1, [TP_O3_WAVE] = 1, [TP_BPM] = 30};
 const char *const TRI_MS_NAME[MS_N] = {"OFF", "LFO", "FIL ENV", "AMP ENV", "VELO", "WHEEL", "PRESSURE", "KEY",
-                                      "RANDOM", "BEND"};
+                                      "RANDOM", "BEND", "OSC 3"};
 const char *const TRI_MD_NAME[MD_N] = {"OFF", "PITCH", "PITCH 1", "PITCH 2", "PITCH 3", "PW 1", "PW 2", "PW 3",
                                       "LEVEL 1", "LEVEL 2", "LEVEL 3", "NOISE", "CUTOFF", "RES", "FB/DRV", "AMP",
-                                      "PAN", "LFO RATE", "LFO AMT", "FXA MIX", "FXB MIX"};
+                                      "PAN", "LFO RATE", "LFO AMT", "FXA MIX", "FXB MIX", "ENV AMT", "ATTACK",
+                                      "DECAY", "FXA P1", "FXB P1"};
 const char *const TRI_PNAME[TP_N] = {
     "OCT", "WAVE", "PW", "LEVEL",
     "OCT", "WAVE", "PW 2", "LEVEL", "SYNC 2",
@@ -103,7 +104,7 @@ static tri_perf_t F = {6, 2, 0, 1};
 static uint32_t clock_age;
 static int next_voice;
 static float bend, modw, press;
-static float mm_lfo_rate, mm_lfo_amt, mm_fx_mix[2];   /* the mod matrix on what all voices share */
+static float mm_lfo_rate, mm_lfo_amt, mm_fx_mix[2], mm_fx_p1[2];   /* the mod matrix on what all voices share */
 static int sustain;
 static int low_note = 48;                /* the lowest note sounding: the ring modulator's tracking */
 
@@ -748,6 +749,7 @@ static void lfo_control(void)
 }
 
 /* ------------------------------------------------------------ mod matrix --- */
+static inline float wave(float ph, float pw, int m);
 static float mm_src(int s, const voice_t *v)   /* a source's value now: unipolar 0..1 or bipolar -1..1 */
 {
     switch (s) {
@@ -760,6 +762,7 @@ static float mm_src(int s, const voice_t *v)   /* a source's value now: unipolar
     case MS_KEY: return v ? fm_clampf((v->pitch - 60.0f) * (1.0f / 60.0f), -1.0f, 1.0f) : 0.0f;
     case MS_RAND: return v ? v->mrand : 0.0f;
     case MS_BEND: return bend;
+    case MS_OSC3: return v ? fm_clampf(wave(v->ph[2], v->pw[2], v->m[2]), -1.0f, 1.0f) : 0.0f;
     default: return 0.0f;
     }
 }
@@ -802,6 +805,8 @@ static void mm_global(void)
     mm_lfo_amt = d[MD_LFO_AMT];
     mm_fx_mix[0] = d[MD_FXA_MIX];
     mm_fx_mix[1] = d[MD_FXB_MIX];
+    mm_fx_p1[0] = d[MD_FXA_P1];
+    mm_fx_p1[1] = d[MD_FXB_P1];
 }
 
 static void control(void)
@@ -810,9 +815,10 @@ static void control(void)
     static const float PAN[6] = {-1.0f, 1.0f, -0.6f, 0.6f, -0.25f, 0.25f};
     int i, n = nvoices(), u = uni_mode();
     float vint = knob(TP_VINTAGE);
-    float fa = att_coef(env_time(P.p[TP_FA], 0.0008f, 10.0f)), fd = env_time(P.p[TP_FD], 0.002f, 15.0f);
+    float fa_t = env_time(P.p[TP_FA], 0.0008f, 10.0f), aa_t = env_time(P.p[TP_AA], 0.0008f, 10.0f);
+    float fa = att_coef(fa_t), fd = env_time(P.p[TP_FD], 0.002f, 15.0f);
     float fr = env_time(P.p[TP_FR], 0.002f, 15.0f), fs = knob(TP_FS);
-    float aa = att_coef(env_time(P.p[TP_AA], 0.0008f, 10.0f)), ad = env_time(P.p[TP_AD], 0.002f, 15.0f);
+    float aa = att_coef(aa_t), ad = env_time(P.p[TP_AD], 0.002f, 15.0f);
     float ar = env_time(P.p[TP_AR], 0.002f, 15.0f), as = knob(TP_AS);
     float lfo_d, lfo_pitch, lfo_pw, lfo_cut, lfo_amp, bend_semi, cut0, fenv, res, k, comp, fdrv, drive, fbk;
     float pm3 = bip(TP_PM_OSC3), pmf = bip(TP_PM_FENV), aamt = knob(TP_AENV_AMT), spread = knob(TP_PAN);
@@ -856,7 +862,7 @@ static void control(void)
     for (i = 0; i < TRI_MAXV; i++) {
         voice_t *v = &V[i];
         float ef, ea, cut_oct, fc, g, amp, base, pitch, et = 1.0f + 0.15f * vint * v->vr[4];
-        float md[MD_N];
+        float md[MD_N], fav = fa, aav = aa, dm = 1.0f;
         int o, mm;
         if (i >= n && v->ea.stage) {
             v->held = v->gate = 0;
@@ -868,8 +874,16 @@ static void control(void)
         v->a0 = v->a1;
         if (v->ea.stage == 0 && v->a0 == 0.0f)
             continue;                    /* silent: nothing to compute */
-        env_run(&v->ef, fa, coef(fd * et), fs, coef(fr * et));
-        env_run(&v->ea, aa, coef(ad * et), as, coef(ar * et));
+        mm = mm_sum(v, md);              /* the matrix, from the sources as the last block left them */
+        if (md[MD_ATTACK] != 0.0f) {     /* +-4 octaves of time: 16 times shorter or longer */
+            float x = fm_exp2f(fm_clampf(md[MD_ATTACK], -1.0f, 1.0f) * 4.0f);
+            fav = att_coef(fa_t * x);
+            aav = att_coef(aa_t * x);
+        }
+        if (md[MD_DECAY] != 0.0f)
+            dm = fm_exp2f(fm_clampf(md[MD_DECAY], -1.0f, 1.0f) * 4.0f);
+        env_run(&v->ef, fav, coef(fd * et * dm), fs, coef(fr * et * dm));
+        env_run(&v->ea, aav, coef(ad * et * dm), as, coef(ar * et * dm));
         v->gate_lvl += ((v->gate ? 1.0f : 0.0f) - v->gate_lvl) * 0.3f;
         ef = v->ef.level;
         ea = v->ea.level;
@@ -900,7 +914,6 @@ static void control(void)
         else
             v->pitch = fm_maxf(v->pitch - v->glide_step, v->pitch_target);
         v->uni = u >= 1 && u <= 6 ? uni_step * UNI[i] : 0.0f;
-        mm = mm_sum(v, md);
         pitch = v->pitch + bend_semi + v->drift + v->uni + md[MD_PITCH] * 24.0f;
         for (o = 0; o < 3; o++) {
             float semis = (o == 2 && !P.p[TP_O3_KEY] ? 60.0f + bend_semi : pitch) + oct[o]
@@ -950,7 +963,7 @@ static void control(void)
         }
         v->two_pole = P.p[TP_2POLE];
         /* the cutoff, in octaves above 15 Hz */
-        cut_oct = cut0 + fenv * ef * (P.p[TP_FVEL] ? 0.25f + 0.75f * v->vel : 1.0f) + lfo_cut
+        cut_oct = cut0 + (fenv + 9.0f * md[MD_FENV_AMT]) * ef * (P.p[TP_FVEL] ? 0.25f + 0.75f * v->vel : 1.0f) + lfo_cut
                 + (P.p[TP_PM_FILT] ? sq_sign(pmf) * 6.0f * ef : 0.0f)
                 + 0.5f * (float)P.p[TP_FKEY] * (v->pitch - 60.0f) * (1.0f / 12.0f) + vint * 0.25f * v->vr[3]
                 + md[MD_CUTOFF] * 8.0f;
@@ -1432,6 +1445,12 @@ static void job2(uint32_t arg)           /* on the second core: voices 4..6 */
     voices_part(TRI_MAXV / 2, TRI_MAXV, 1);
 }
 
+static int fx_p1(int i, float m)         /* an effect's P1, moved by the mod matrix */
+{
+    int v = P.p[i] + (int)(m * 127.0f);
+    return v < 0 ? 0 : v > 127 ? 127 : v;
+}
+
 void tri_render(float *out, uint32_t n)
 {
     static float dc_l, dc_r, dcx_l, dcx_r;
@@ -1465,9 +1484,9 @@ void tri_render(float *out, uint32_t n)
             if (ta >= FX_HALL)
                 ta = FX_OFF;
             fx_run(&FXS[0], bufl[0], bufr[0], ns, ta, fm_clampf(knob(TP_FXA_MIX) + mm_fx_mix[0], 0.0f, 1.0f),
-                   P.p[TP_FXA_P1], P.p[TP_FXA_P2], P.p[TP_FXA_SYNC]);
+                   fx_p1(TP_FXA_P1, mm_fx_p1[0]), P.p[TP_FXA_P2], P.p[TP_FXA_SYNC]);
             fx_run(&FXS[1], bufl[0], bufr[0], ns, tb, fm_clampf(knob(TP_FXB_MIX) + mm_fx_mix[1], 0.0f, 1.0f),
-                   P.p[TP_FXB_P1], P.p[TP_FXB_P2], P.p[TP_FXB_SYNC]);
+                   fx_p1(TP_FXB_P1, mm_fx_p1[1]), P.p[TP_FXB_P2], P.p[TP_FXB_SYNC]);
         }
         for (i = 0; i < ns; i++) {
             float l = bufl[0][i] * vol, r = bufr[0][i] * vol;
@@ -1526,8 +1545,6 @@ static void patch_clamp(void)
     for (i = 0; i < TRI_MM_SLOTS; i++) {
         if (P.mm[i].src >= MS_N || P.mm[i].dst >= MD_N)
             P.mm[i].src = P.mm[i].dst = 0;
-        if (P.mm[i].amt > 127)
-            P.mm[i].amt = 64;
         if (P.mm[i].src == 0 && P.mm[i].dst == 0 && P.mm[i].amt == 0)
             P.mm[i].amt = 64;            /* a patch from before the matrix: its spare bytes were zero */
     }
@@ -1571,9 +1588,9 @@ void tri_set_route(int slot, int src, int dst, int amt)
 {
     if (slot < 0 || slot >= TRI_MM_SLOTS)
         return;
-    P.mm[slot].src = (uint8_t)(src < 0 ? 0 : src >= MS_N ? MS_N - 1 : src);
-    P.mm[slot].dst = (uint8_t)(dst < 0 ? 0 : dst >= MD_N ? MD_N - 1 : dst);
-    P.mm[slot].amt = (uint8_t)(amt < 0 ? 0 : amt > 127 ? 127 : amt);
+    P.mm[slot].src = (uint16_t)(src < 0 ? 0 : src >= MS_N ? MS_N - 1 : src) & 15u;
+    P.mm[slot].dst = (uint16_t)(dst < 0 ? 0 : dst >= MD_N ? MD_N - 1 : dst) & 31u;
+    P.mm[slot].amt = (uint16_t)(amt < 0 ? 0 : amt > 127 ? 127 : amt) & 127u;
 }
 void tri_sustain(int on) { ev_push(EV_SUS, 0, (uint32_t)(on != 0)); }
 void tri_chord_learn(void) { ev_push(EV_LEARN, 0, 0); }

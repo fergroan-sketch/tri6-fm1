@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: MPL-2.0 */
 /* TRI-6 FM-1: the app around the engine (tri6.c). The FM-1's controls as a Trigon-6 style panel, in pages:
  *
- *   HOME  the patch: PRESET / SELECT +-1, ALGO +-10; K1..K4 CUTOFF, RES, ENV AMT, FDBK/DRIVE
+ *   HOME  the patch: PRESET +-1, ALGO +-10 (on the MOD MATRIX page: the slot); SELECT steps through every page;
+ *         K1..K4 CUTOFF, RES, ENV AMT, FDBK/DRIVE
  *   EDIT  OSC 1 > OSC 2 > OSC 3 > OSC MORE (PW 2, SYNC, PW 3, KEY 3)
  *   SEL   FILTER (CUTOFF, RES, ENV AMT, KEY) > FILTER 2 (POLES, VEL, NOISE, FDBK/DRIVE)
  *   ENV   FILTER ENV > AMP ENV > AMP (ENV AMT, VEL)
@@ -15,6 +16,7 @@
  *
  * Part of the unity build (device/unity.c, host/plat_host.c), after the platform: gfx.c and announce.c are in
  * scope. The engine is its own unit (fm1.toml o2). */
+#include <stddef.h>
 #include "fastmath.h"
 #include "tri6.h"
 
@@ -22,7 +24,8 @@
 #define NPATCH 128
 #define BLK_N 32
 #define NBLK (NPATCH / BLK_N)
-#define BANK_MAGIC 0x54524231u           /* "TRB1" */
+#define BANK_MAGIC 0x54524232u           /* "TRB2": eight two-byte routes */
+#define BANK_MAGIC_02 0x54524231u        /* "TRB1": 0.1 and 0.2, four three-byte routes (0.1's all zero) */
 typedef struct {
     uint32_t magic;
     tri_patch_t p[BLK_N];
@@ -30,6 +33,7 @@ typedef struct {
 static PLAT_POOL block_t blocks[NBLK];   /* 14 KB: in the pool RAM */
 static uint8_t blk_dirty[NBLK];
 _Static_assert(sizeof(tri_patch_t) == 112, "a patch is 112 bytes");
+_Static_assert(offsetof(tri_patch_t, mm) == 96, "the routes start at byte 96, where 0.2 kept its own");
 _Static_assert(sizeof(block_t) <= PLAT_STORE_MAX, "a block fits a store object");
 
 /* the factory patches: designed for this firmware (none copied from any instrument), from tools/gen_factory.py */
@@ -39,6 +43,7 @@ typedef struct {
     int16_t pitch2, pitch3;
     uint8_t chord_n;
     int8_t chord[6];
+    uint8_t mm[TRI_MM_SLOTS][3];         /* source, destination, amount (64 none) */
 } factory_t;
 static const factory_t FACTORY[] = {
 #include "factory.h"
@@ -50,11 +55,29 @@ static void mm_fix(tri_patch_t *d)       /* a patch from before the mod matrix: 
     int s;
     for (s = 0; s < TRI_MM_SLOTS; s++) {
         tri_route_t *r = &d->mm[s];
-        if (r->src >= MS_N || r->dst >= MD_N || r->amt > 127u)
+        if (r->src >= MS_N || r->dst >= MD_N)
             r->src = r->dst = 0, r->amt = 64;
         if (r->src == 0 && r->dst == 0 && r->amt == 0)
             r->amt = 64;
     }
+}
+
+static void mm_from_02(tri_patch_t *d)   /* a patch saved by 0.2: four routes of three bytes, from byte 96 */
+{
+    const uint8_t *b = (const uint8_t *)d + offsetof(tri_patch_t, mm);
+    uint8_t old[4][3];
+    int s, j;
+    for (s = 0; s < 4; s++)
+        for (j = 0; j < 3; j++)
+            old[s][j] = b[3 * s + j];
+    for (s = 0; s < TRI_MM_SLOTS; s++) {
+        tri_route_t *r = &d->mm[s];
+        int ok = s < 4 && old[s][0] < MS_N && old[s][1] < MD_N && old[s][2] < 128u;
+        r->src = ok ? old[s][0] : 0;
+        r->dst = ok ? old[s][1] : 0;
+        r->amt = ok ? old[s][2] : 64;
+    }
+    mm_fix(d);
 }
 
 static void patch_init(tri_patch_t *d, const factory_t *f)
@@ -72,6 +95,11 @@ static void patch_init(tri_patch_t *d, const factory_t *f)
     d->chord_n = f->chord_n;
     for (i = 0; i < 6; i++)
         d->chord[i] = f->chord[i];
+    for (i = 0; i < TRI_MM_SLOTS; i++) {
+        d->mm[i].src = f->mm[i][0] & 15u;
+        d->mm[i].dst = f->mm[i][1] & 31u;
+        d->mm[i].amt = f->mm[i][2] & 127u;
+    }
     mm_fix(d);
 }
 
@@ -79,8 +107,14 @@ static void banks_load(void)
 {
     int b;
     for (b = 0; b < NBLK; b++)
-        if (plat_store_load(OBJ_BANK0 + (uint32_t)b, &blocks[b], sizeof blocks[b]) != (int)sizeof blocks[b]
-            || blocks[b].magic != BANK_MAGIC) {
+        if (plat_store_load(OBJ_BANK0 + (uint32_t)b, &blocks[b], sizeof blocks[b]) == (int)sizeof blocks[b]
+            && blocks[b].magic == BANK_MAGIC_02) {   /* saved by 0.1 or 0.2: the same patches, routes converted */
+            int i;
+            for (i = 0; i < BLK_N; i++)
+                mm_from_02(&blocks[b].p[i]);
+            blocks[b].magic = BANK_MAGIC;
+            blk_dirty[b] = 1;            /* written in the new form at the next SAVE */
+        } else if (blocks[b].magic != BANK_MAGIC) {
             int i;
             for (i = 0; i < BLK_N; i++)
                 patch_init(&blocks[b].p[i], &FACTORY[b * BLK_N + i < NFACTORY ? b * BLK_N + i : 0]);
@@ -684,11 +718,11 @@ static void knob_set(int id, int v)
     if (id == PX_MSRC || id == PX_MDST || id == PX_MAMT) {
         tri_route_t *r = &edit.mm[ui.mslot];
         if (id == PX_MSRC)
-            r->src = (uint8_t)v;
+            r->src = (unsigned)v & 15u;
         else if (id == PX_MDST)
-            r->dst = (uint8_t)v;
+            r->dst = (unsigned)v & 31u;
         else
-            r->amt = (uint8_t)v;
+            r->amt = (unsigned)v & 127u;
         tri_set_route(ui.mslot, r->src, r->dst, r->amt);
         edit_dirty = 1;
         return;
@@ -906,7 +940,20 @@ static void input(void)
             ui.rec_t = 0;
         }
     }
-    if ((e = plat_enc(EN_PRESET) + plat_enc(EN_SELECT)) != 0 || (e = 10 * plat_enc(EN_ALGO)) != 0) {
+    if ((e = plat_enc(EN_SELECT)) != 0) {   /* SELECT: through every page, in the panel's order */
+        ui.page = (int)(((ui.page + e) % NPAGES + NPAGES) % NPAGES);
+        ui.redraw = 1;
+        if (ann_on())
+            ann_say(ui.page == PG_HOME ? "HOME" : PAGES[ui.page].title, 0, ANN_NOW);
+    }
+    e = plat_enc(EN_ALGO);
+    if (e && ui.page == PG_MM) {         /* ALGO on the matrix page: the slot */
+        ui.mslot = (uint8_t)clamp(ui.mslot + e, 0, TRI_MM_SLOTS - 1);
+        ui.turned_at[0] = now;
+        ui.redraw = 1;
+        e = 0;
+    }
+    if ((e = 10 * e) != 0 || (e = plat_enc(EN_PRESET)) != 0) {   /* PRESET: the patches; ALGO: ten at a time */
         patch_select(set.patch + e);
         plat_midi_send(0x0Cu | (0xC0u | midi_out_ch()) << 8 | (uint32_t)set.patch << 16, TO_USB | TO_BLE);
     }
@@ -1302,6 +1349,21 @@ int app_expect(const char *what, int *got)
     else if (!strncmp(what, "mm", 2) && what[2] >= '0' && what[2] < '0' + TRI_MM_SLOTS) {   /* mm0src, mm0dst, mm0amt */
         const tri_route_t *r = &tri_patch()->mm[what[2] - '0'];
         *got = !strcmp(what + 3, "src") ? r->src : !strcmp(what + 3, "dst") ? r->dst : r->amt;
+    }
+    else if (!strcmp(what, "conv02")) {  /* 0.2's three-byte routes into 0.3's: 1 when right */
+        tri_patch_t t;
+        uint8_t *b = (uint8_t *)&t + offsetof(tri_patch_t, mm);
+        static const uint8_t OLD[12] = {MS_KEY, MD_CUTOFF, 104, MS_VEL, MD_AMP, 20, 0, 0, 0, 0, 0, 0};
+        int i, ok;
+        memset(&t, 0, sizeof t);
+        for (i = 0; i < 12; i++)
+            b[i] = OLD[i];
+        mm_from_02(&t);
+        ok = t.mm[0].src == MS_KEY && t.mm[0].dst == MD_CUTOFF && t.mm[0].amt == 104 && t.mm[1].src == MS_VEL
+          && t.mm[1].dst == MD_AMP && t.mm[1].amt == 20;
+        for (i = 2; i < TRI_MM_SLOTS; i++)
+            ok = ok && t.mm[i].src == 0 && t.mm[i].dst == 0 && t.mm[i].amt == 64;
+        *got = ok;
     }
     else if (!strncmp(what, "param", 5))
         *got = edit.p[atoi(what + 5) % TP_N];

@@ -16,5 +16,5 @@ screenshot = "card.png"
 licence = "MPL-2.0"
 credits = "Built on fm1-base and felucca-bsp. Unofficial: not affiliated with Sequential or M-VAVE."
 author = "Fergus"
-description = "A six-voice polysynth in the style of the Sequential Trigon-6: three oscillators a voice with sync, noise, feedback and drive into a 2/4-pole ladder filter, two envelopes, an LFO, poly mod, vintage, distortion, two effects, a four-slot mod matrix, unison with chord memory and an arpeggiator."
+description = "A six-voice polysynth in the style of the Sequential Trigon-6: three oscillators a voice with sync, noise, feedback and drive into a 2/4-pole ladder filter, two envelopes, an LFO, poly mod, vintage, distortion, two effects, an eight-slot mod matrix, unison with chord memory and an arpeggiator."
 tags = ["synth"]

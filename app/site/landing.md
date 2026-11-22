@@ -4,7 +4,7 @@
 
 TRI-6 FM-1 is a six-voice polysynth for the M-VAVE FM-1 in the style of the Sequential Trigon-6: three oscillators a
 voice with sync, noise, feedback and drive into a 2/4-pole ladder filter, two envelopes, an LFO, poly mod, vintage,
-distortion, two effects, a four-slot mod matrix, unison with chord memory and an arpeggiator.
+distortion, two effects, an eight-slot mod matrix, unison with chord memory and an arpeggiator.
 
 ![TRI-6 FM-1's home screen](img/home.png "TRI-6 FM-1 on the FM-1's screen")
 ![TRI-6 FM-1's mod matrix](img/modmatrix.png "The MOD MATRIX page")

@@ -39,15 +39,21 @@ enum {
 enum { FX_OFF, FX_BBD, FX_DDL, FX_CHO, FX_PH1, FX_PH2, FX_PH3, FX_RING, FX_FL1, FX_FL2,
        FX_HALL, FX_ROOM, FX_PLATE, FX_SPRING, FX_N };
 
-/* the mod matrix: TRI_MM_SLOTS routes, each a source, a destination and a bipolar amount (64 = none). Kept in what
- * were the patch's spare bytes, so a patch saved before the matrix has every slot OFF */
-#define TRI_MM_SLOTS 4
-enum { MS_OFF, MS_LFO, MS_FENV, MS_AENV, MS_VEL, MS_WHEEL, MS_PRESS, MS_KEY, MS_RAND, MS_BEND, MS_N };
+/* the mod matrix: TRI_MM_SLOTS routes, each a source, a destination and a bipolar amount (64 = none), two bytes a
+ * route in what were the patch's 16 spare bytes. (0.2 kept four routes of three bytes there: app.c converts a bank
+ * saved by 0.2.) New sources and destinations go at the ends, so saved routes keep their meaning. */
+#define TRI_MM_SLOTS 8
+enum { MS_OFF, MS_LFO, MS_FENV, MS_AENV, MS_VEL, MS_WHEEL, MS_PRESS, MS_KEY, MS_RAND, MS_BEND,
+       MS_OSC3,                                                /* OSC 3's wave: with OSC 3 at LO, a second LFO */
+       MS_N };
 enum { MD_OFF, MD_PITCH, MD_PITCH1, MD_PITCH2, MD_PITCH3, MD_PW1, MD_PW2, MD_PW3, MD_LEVEL1, MD_LEVEL2, MD_LEVEL3,
-       MD_NOISE, MD_CUTOFF, MD_RES, MD_FDRV, MD_AMP, MD_PAN, MD_LFO_RATE, MD_LFO_AMT, MD_FXA_MIX, MD_FXB_MIX, MD_N };
-typedef struct {
-    uint8_t src, dst, amt;
+       MD_NOISE, MD_CUTOFF, MD_RES, MD_FDRV, MD_AMP, MD_PAN, MD_LFO_RATE, MD_LFO_AMT, MD_FXA_MIX, MD_FXB_MIX,
+       MD_FENV_AMT, MD_ATTACK, MD_DECAY, MD_FXA_P1, MD_FXB_P1,   /* ATTACK both envelopes' attack, DECAY decay and release */
+       MD_N };
+typedef struct {                         /* 2 bytes: source 0..15, destination 0..31, amount 0..127 */
+    uint16_t src : 4, dst : 5, amt : 7;
 } tri_route_t;
+_Static_assert(MS_N <= 16 && MD_N <= 32, "a route's fields hold every source and destination");
 extern const char *const TRI_MS_NAME[MS_N];
 extern const char *const TRI_MD_NAME[MD_N];
 
@@ -58,8 +64,7 @@ typedef struct {
     char name[TRI_NAME_LEN];
     uint8_t chord_n;                     /* unison chord memory: notes, 0 none */
     int8_t chord[6];                     /* their offsets from the lowest, in semitones */
-    tri_route_t mm[TRI_MM_SLOTS];        /* the mod matrix */
-    uint8_t rsv[112 - TP_N - TRI_NAME_LEN - 4 - 7 - 3 * TRI_MM_SLOTS];
+    tri_route_t mm[TRI_MM_SLOTS];        /* the mod matrix (from byte 96) */
 } tri_patch_t;
 
 /* the settings that are not the patch's */
