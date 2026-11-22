@@ -5,7 +5,7 @@
   "author": "Fergus",
   "license": "MPL-2.0",
   "tagline": "a Trigon-6 style polysynth for the FM-1",
-  "description": "A six-voice polysynth in the style of the Sequential Trigon-6: three oscillators a voice with sync, noise, feedback and drive into a 2/4-pole ladder filter, two envelopes, an LFO, poly mod, vintage, distortion, two effects, a four-slot mod matrix, unison with chord memory and an arpeggiator.",
+  "description": "A six-voice polysynth in the style of the Sequential Trigon-6: three oscillators a voice with sync, noise, feedback and drive into a 2/4-pole ladder filter, two envelopes, an LFO, poly mod, vintage, distortion, two effects, an eight-slot mod matrix, unison with chord memory and an arpeggiator.",
   "tags": ["synth"],
   "install": "https://github.com/fergroan-sketch/tri6-fm1/releases/latest",
   "source": "https://github.com/fergroan-sketch/tri6-fm1",

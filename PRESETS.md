@@ -1,6 +1,6 @@
 # TRI-6 FM-1 factory bank
 
-Patches 000 to 065 were made for this firmware; the rest of the 128 slots start as INIT.
+Patches 000 to 066 were made for this firmware; the rest of the 128 slots start as INIT.
 
 ## INIT
 
@@ -103,3 +103,7 @@ Patches 000 to 065 were made for this firmware; the rest of the 128 slots start 
 
 - 064 CHOIR
 - 065 VOCAL PAD
+
+## Mod matrix
+
+- 066 TWO LFOS
