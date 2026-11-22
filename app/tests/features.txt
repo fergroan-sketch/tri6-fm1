@@ -189,7 +189,7 @@ wait 30
 expect mm0src 0
 expect mm1src 0
 expect dirty 0
-# --- 0.3: eight slots, ALGO picks the slot on the matrix page, OSC 3 as a source, the new destinations
+# --- 0.3/0.4: eight slots, SELECT picks the slot on the matrix page, OSC 3 and MORPH as sources, the new destinations
 tap HOME
 wait 30
 tap SEQ
@@ -199,7 +199,7 @@ wait 30
 tap SEQ
 wait 30
 expect page 14
-turn ALGO 7
+turn SELECT 7
 wait 30
 turn K2 10
 wait 30
@@ -207,27 +207,47 @@ expect mm7src 10
 turn K3 22
 wait 30
 expect mm7dst 22
-turn ALGO -7
+turn SELECT -7
 wait 30
-turn K2 1
+turn K2 11
 wait 30
-expect mm0src 1
+expect mm0src 11
 expect mm7src 10
 expect page 14
-# SELECT steps through the pages; PRESET still changes the patch
+# SELECT steps through the pages elsewhere
+tap HOME
+wait 30
+midi C0 00
+wait 60
 turn SELECT 1
 wait 30
-expect page 15
+expect page 1
 turn SELECT -2
 wait 30
-expect page 13
-# a factory patch's routes: POLY PIANO, velocity to cutoff and key to decay
-midi C0 16
-wait 60
-expect mm0src 4
-expect mm0dst 12
-expect mm1src 7
-expect mm1dst 23
-expect mm1amt 39
+expect page 22
+# ALGO is MORPH: it doesn't change the patch
+expect patch 0
+midi B0 10 14
+wait 30
+expect morph 20
+turn ALGO 1
+wait 30
+expect morph 21
+expect patch 0
+# OCT held while PRESET turns: ten patches, and no octave change
+press OCT+
+wait 30
+turn PRESET 2
+wait 30
+release OCT+
+wait 30
+expect patch 20
+expect octave 0
+tap OCT+
+wait 30
+expect octave 1
+tap OCT-
+wait 30
+expect octave 0
 # 0.2's routes, converted
 expect conv02 1

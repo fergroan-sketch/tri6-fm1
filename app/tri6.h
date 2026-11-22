@@ -45,6 +45,7 @@ enum { FX_OFF, FX_BBD, FX_DDL, FX_CHO, FX_PH1, FX_PH2, FX_PH3, FX_RING, FX_FL1, 
 #define TRI_MM_SLOTS 8
 enum { MS_OFF, MS_LFO, MS_FENV, MS_AENV, MS_VEL, MS_WHEEL, MS_PRESS, MS_KEY, MS_RAND, MS_BEND,
        MS_OSC3,                                                /* OSC 3's wave: with OSC 3 at LO, a second LFO */
+       MS_MORPH,                                               /* the MORPH knob (ALGO), 0..1: a macro each patch routes */
        MS_N };
 enum { MD_OFF, MD_PITCH, MD_PITCH1, MD_PITCH2, MD_PITCH3, MD_PW1, MD_PW2, MD_PW3, MD_LEVEL1, MD_LEVEL2, MD_LEVEL3,
        MD_NOISE, MD_CUTOFF, MD_RES, MD_FDRV, MD_AMP, MD_PAN, MD_LFO_RATE, MD_LFO_AMT, MD_FXA_MIX, MD_FXB_MIX,
@@ -95,6 +96,7 @@ void tri_bend(int v);                    /* -8192 .. 8191 */
 void tri_mod(int v);                     /* mod wheel 0..127: adds to the LFO amount; a mod matrix source */
 void tri_pressure(int v);                /* pressure 0..127 (channel or the keys' own): a mod matrix source */
 void tri_set_route(int slot, int src, int dst, int amt);
+void tri_morph(int v);                   /* the MORPH knob 0..127: a mod matrix source */
 void tri_sustain(int on);
 void tri_chord_learn(void);              /* the next chord played (all keys up) is kept; UNISON becomes the chord */
 void tri_clock(int rt);                  /* MIDI real time: 0xF8, 0xFA, 0xFB, 0xFC */

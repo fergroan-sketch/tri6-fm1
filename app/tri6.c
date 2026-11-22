@@ -41,7 +41,7 @@ const uint8_t TRI_MAX[TP_N] = {
 };
 const uint8_t TRI_MIN[TP_N] = {[TP_O1_WAVE] = 1, [TP_O2_WAVE] = 1, [TP_O3_WAVE] = 1, [TP_BPM] = 30};
 const char *const TRI_MS_NAME[MS_N] = {"OFF", "LFO", "FIL ENV", "AMP ENV", "VELO", "WHEEL", "PRESSURE", "KEY",
-                                      "RANDOM", "BEND", "OSC 3"};
+                                      "RANDOM", "BEND", "OSC 3", "MORPH"};
 const char *const TRI_MD_NAME[MD_N] = {"OFF", "PITCH", "PITCH 1", "PITCH 2", "PITCH 3", "PW 1", "PW 2", "PW 3",
                                       "LEVEL 1", "LEVEL 2", "LEVEL 3", "NOISE", "CUTOFF", "RES", "FB/DRV", "AMP",
                                       "PAN", "LFO RATE", "LFO AMT", "FXA MIX", "FXB MIX", "ENV AMT", "ATTACK",
@@ -103,7 +103,7 @@ static tri_patch_t P;
 static tri_perf_t F = {6, 2, 0, 1};
 static uint32_t clock_age;
 static int next_voice;
-static float bend, modw, press;
+static float bend, modw, press, morph;
 static float mm_lfo_rate, mm_lfo_amt, mm_fx_mix[2], mm_fx_p1[2];   /* the mod matrix on what all voices share */
 static int sustain;
 static int low_note = 48;                /* the lowest note sounding: the ring modulator's tracking */
@@ -121,7 +121,7 @@ static float int_acc;                    /* the internal clock's tick fraction *
 #define EVQ 128
 static volatile uint32_t evq[EVQ];
 static volatile uint32_t ev_w, ev_r;
-enum { EV_ON = 1, EV_OFF, EV_ALLOFF, EV_PANIC, EV_BEND, EV_MOD, EV_SUS, EV_LEARN, EV_RT, EV_PRESS };
+enum { EV_ON = 1, EV_OFF, EV_ALLOFF, EV_PANIC, EV_BEND, EV_MOD, EV_SUS, EV_LEARN, EV_RT, EV_PRESS, EV_MORPH };
 
 static void ev_push(uint32_t type, uint32_t a, uint32_t b)
 {
@@ -676,6 +676,7 @@ static void events(void)
         case EV_BEND: bend = ((float)a - 8192.0f) * (1.0f / 8192.0f); break;
         case EV_MOD: modw = (float)b * (1.0f / 127.0f); break;
         case EV_PRESS: press = (float)b * (1.0f / 127.0f); break;
+        case EV_MORPH: morph = (float)b * (1.0f / 127.0f); break;
         case EV_SUS: do_sustain((int)b); break;
         case EV_LEARN:
             learning = 1;
@@ -762,6 +763,7 @@ static float mm_src(int s, const voice_t *v)   /* a source's value now: unipolar
     case MS_KEY: return v ? fm_clampf((v->pitch - 60.0f) * (1.0f / 60.0f), -1.0f, 1.0f) : 0.0f;
     case MS_RAND: return v ? v->mrand : 0.0f;
     case MS_BEND: return bend;
+    case MS_MORPH: return morph;
     case MS_OSC3: return v ? fm_clampf(wave(v->ph[2], v->pw[2], v->m[2]), -1.0f, 1.0f) : 0.0f;
     default: return 0.0f;
     }
@@ -1584,6 +1586,7 @@ void tri_panic(void) { ev_push(EV_PANIC, 0, 0); }
 void tri_bend(int v) { ev_push(EV_BEND, (uint32_t)(v + 8192), 0); }
 void tri_mod(int v) { ev_push(EV_MOD, 0, (uint32_t)v); }
 void tri_pressure(int v) { ev_push(EV_PRESS, 0, (uint32_t)v); }
+void tri_morph(int v) { ev_push(EV_MORPH, 0, (uint32_t)(v < 0 ? 0 : v > 127 ? 127 : v)); }
 void tri_set_route(int slot, int src, int dst, int amt)
 {
     if (slot < 0 || slot >= TRI_MM_SLOTS)

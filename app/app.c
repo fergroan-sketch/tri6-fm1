@@ -103,6 +103,28 @@ static void patch_init(tri_patch_t *d, const factory_t *f)
     mm_fix(d);
 }
 
+/* a bank saved by an older version: its empty INIT slots get this version's factory patches */
+static void banks_fill(void)
+{
+    tri_patch_t init;
+    const uint8_t *ib = (const uint8_t *)&init;
+    int b, i;
+    patch_init(&init, &FACTORY[0]);
+    mm_fix(&init);
+    for (b = 0; b < NBLK; b++)
+        for (i = 0; i < BLK_N; i++) {
+            const uint8_t *pb = (const uint8_t *)&blocks[b].p[i];
+            int g = b * BLK_N + i, same = 1;
+            uint32_t k;
+            for (k = 0; k < sizeof init && same; k++)
+                same = pb[k] == ib[k];
+            if (g > 0 && g < NFACTORY && same) {
+                patch_init(&blocks[b].p[i], &FACTORY[g]);
+                blk_dirty[b] = 1;
+            }
+        }
+}
+
 static void banks_load(void)
 {
     int b;
@@ -119,11 +141,13 @@ static void banks_load(void)
             for (i = 0; i < BLK_N; i++)
                 patch_init(&blocks[b].p[i], &FACTORY[b * BLK_N + i < NFACTORY ? b * BLK_N + i : 0]);
             blocks[b].magic = BANK_MAGIC;
+            continue;
         } else {
             int i;
             for (i = 0; i < BLK_N; i++)
                 mm_fix(&blocks[b].p[i]);
         }
+    banks_fill();
 }
 
 static tri_patch_t *slot(int i) { return &blocks[(i / BLK_N) % NBLK].p[i % BLK_N]; }
@@ -184,6 +208,14 @@ static const uint8_t WAVE_CC[][3] = {
 };
 static const uint8_t WAVE_PARAM[3] = {TP_O1_WAVE, TP_O2_WAVE, TP_O3_WAVE};
 static uint32_t midi_out_ch(void) { return set.midi_ch ? set.midi_ch - 1u : 0u; }
+static uint8_t morph_now;                /* the MORPH knob (ALGO, or CC 16), 0..127 */
+static void morph_set(int v, int send)
+{
+    morph_now = (uint8_t)(v < 0 ? 0 : v > 127 ? 127 : v);
+    tri_morph(morph_now);
+    if (send)
+        plat_midi_send(0x0Bu | (0xB0u | midi_out_ch()) << 8 | 16u << 16 | (uint32_t)morph_now << 24, TO_USB | TO_BLE);
+}
 
 /* a CC's 0..127 as a parameter's range, and back */
 static int cc_to_param(int i, uint32_t v)
@@ -261,6 +293,7 @@ static void cc_in(uint32_t cc, uint32_t v)
         }
     switch (cc) {
     case 1: tri_mod((int)v); return;
+    case 16: morph_set((int)v, 0); ui_poke = 1; return;   /* MORPH */
     case 64: tri_sustain(v >= 64u); return;
     case 74: cc_bright = (int)v; return;
     case 76: edit.pitch2 = tri_patch()->pitch2 = (int16_t)(((int)v - 64) * 700 / 63); edit_dirty = ui_poke = 1; return;
@@ -428,6 +461,8 @@ static struct {
     uint32_t turned_at[4];
     uint32_t knob_t[4];
     uint8_t redraw;
+    uint32_t morph_t;                    /* MORPH's last turn, for its speed */
+    uint8_t oct_held, oct_used;          /* an OCT button down (its number, 0 none); PRESET turned while it was */
     uint8_t mslot;                       /* the mod matrix slot on show, 0..3 */
     uint8_t press;                       /* the keys' pressure, as last sent */
 } ui;
@@ -910,8 +945,10 @@ static void input(void)
         if (!(btn & bit) || (ui.btn & bit))
             continue;
         switch (k) {
-        case B_OCTDN: octave_step(-1); break;
-        case B_OCTUP: octave_step(1); break;
+        case B_OCTDN: case B_OCTUP:      /* the octave on release, unless PRESET turned while it was held */
+            ui.oct_held = (uint8_t)k;
+            ui.oct_used = 0;
+            break;
         case B_HOME: page_cycle(HOME_P, 1); break;
         case B_EDIT: page_cycle(EDIT_P, 4); break;
         case B_SEL: page_cycle(SEL_P, 2); break;
@@ -940,20 +977,41 @@ static void input(void)
             ui.rec_t = 0;
         }
     }
-    if ((e = plat_enc(EN_SELECT)) != 0) {   /* SELECT: through every page, in the panel's order */
-        ui.page = (int)(((ui.page + e) % NPAGES + NPAGES) % NPAGES);
+    for (k = B_OCTDN; ui.oct_held && k <= B_OCTUP; k += B_OCTUP - B_OCTDN)   /* an OCT button let go */
+        if (ui.oct_held == k && !(btn >> k & 1u)) {
+            if (!ui.oct_used)
+                octave_step(k == B_OCTUP ? 1 : -1);
+            ui.oct_held = 0;
+        }
+    if ((e = plat_enc(EN_SELECT)) != 0) {
+        if (ui.page == PG_MM) {          /* SELECT on the matrix page: the slot */
+            ui.mslot = (uint8_t)clamp(ui.mslot + e, 0, TRI_MM_SLOTS - 1);
+            ui.turned_at[0] = now;
+        } else {                         /* elsewhere: through every page, in the panel's order */
+            ui.page = (int)(((ui.page + e) % NPAGES + NPAGES) % NPAGES);
+            if (ann_on())
+                ann_say(ui.page == PG_HOME ? "HOME" : PAGES[ui.page].title, 0, ANN_NOW);
+        }
         ui.redraw = 1;
-        if (ann_on())
-            ann_say(ui.page == PG_HOME ? "HOME" : PAGES[ui.page].title, 0, ANN_NOW);
     }
-    e = plat_enc(EN_ALGO);
-    if (e && ui.page == PG_MM) {         /* ALGO on the matrix page: the slot */
-        ui.mslot = (uint8_t)clamp(ui.mslot + e, 0, TRI_MM_SLOTS - 1);
-        ui.turned_at[0] = now;
-        ui.redraw = 1;
-        e = 0;
+    if ((e = plat_enc(EN_ALGO)) != 0) {  /* ALGO: MORPH, the patch's macro (a mod matrix source) */
+        uint32_t dt = now - ui.morph_t;
+        ui.morph_t = now;
+        char t[16];
+        int s, routed = 0;
+        morph_set(morph_now + e * (dt < 40u ? 4 : dt < 100u ? 2 : 1), 1);
+        for (s = 0; s < TRI_MM_SLOTS; s++)
+            routed |= edit.mm[s].src == MS_MORPH && edit.mm[s].dst != MD_OFF && edit.mm[s].amt != 64;
+        int_text(morph_now, t);
+        if (!routed)
+            text_cat(t, " NO ROUTE");
+        app_say("MORPH", t);
     }
-    if ((e = 10 * e) != 0 || (e = plat_enc(EN_PRESET)) != 0) {   /* PRESET: the patches; ALGO: ten at a time */
+    if ((e = plat_enc(EN_PRESET)) != 0) {   /* PRESET: the patches; with OCT held, ten at a time */
+        if (ui.oct_held) {
+            e *= 10;
+            ui.oct_used = 1;
+        }
         patch_select(set.patch + e);
         plat_midi_send(0x0Cu | (0xC0u | midi_out_ch()) << 8 | (uint32_t)set.patch << 16, TO_USB | TO_BLE);
     }
@@ -1350,6 +1408,8 @@ int app_expect(const char *what, int *got)
         const tri_route_t *r = &tri_patch()->mm[what[2] - '0'];
         *got = !strcmp(what + 3, "src") ? r->src : !strcmp(what + 3, "dst") ? r->dst : r->amt;
     }
+    else if (!strcmp(what, "morph"))
+        *got = morph_now;
     else if (!strcmp(what, "conv02")) {  /* 0.2's three-byte routes into 0.3's: 1 when right */
         tri_patch_t t;
         uint8_t *b = (uint8_t *)&t + offsetof(tri_patch_t, mm);
