@@ -6,7 +6,7 @@ by Sequential or M-VAVE. The engine is written from scratch from the Trigon-6 us
 what each control does and its range. It contains no code or data from Sequential's firmware, and the factory patches
 are original designs.
 
-**Status: 0.4, pre-release.** It builds for the FM-1 and passes fm1-base's host simulator checks. It has not yet been
+**Status: 0.4.1, pre-release.** It builds for the FM-1 and passes fm1-base's host simulator checks. It has not yet been
 tested on a real FM-1: install it at your own risk, after a backup.
 
 ## The sound
