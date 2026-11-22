@@ -256,15 +256,23 @@ with open("app/factory.h", "w") as f:
         ch = e["chord"] + [0] * (6 - len(e["chord"]))
         f.write('{"%s", {%s}, %d, %d, %d, {%s}, {%s}},\n' % (name, ", ".join(str(x) for x in v), e["p2"], e["p3"],
                 len(e["chord"]), ", ".join(str(x) for x in ch), ", ".join("{%d, %d, %d}" % tuple(m) for m in e["mm"])))
+WORD = dict(pitch="pitch", pitch1="osc 1 pitch", pitch2="osc 2 pitch", pitch3="osc 3 pitch", pw1="osc 1 width",
+            pw2="osc 2 width", pw3="osc 3 width", lvl1="osc 1 level", lvl2="osc 2 level", lvl3="osc 3 level",
+            noise="noise", cutoff="cutoff", res="resonance", fdrv="drive", amp="level", pan="pan", lforate="LFO rate",
+            lfoamt="LFO amount", amix="FX A mix", bmix="FX B mix", fenv="filter env", attack="attack", decay="decay",
+            ap1="FX A time", bp1="FX B time")
 with open("PRESETS.md", "w") as f:
     f.write("# TRI-6 FM-1 factory bank\n\n%d patches, 000 to %03d, laid out by kind. Every patch was made for this "
             "firmware; none is copied from any instrument's presets. Every patch but INIT has a MORPH route (the "
-            "ALGORITHM knob): the mod matrix patches their own, the others a move that suits their kind.\n"
+            "ALGORITHM knob): the mod matrix patches their own, the others a move that suits their kind. Each patch's MORPH move is listed after its name.\n"
             % (len(B), len(B) - 1))
     last = None
     for i, (name, v, e, cat) in enumerate(B):
         if cat != last:
             f.write("\n## %s\n\n" % cat)
             last = cat
-        f.write("- %03d %s\n" % (i, name))
+        mv = [("longer " if m[2] > 64 else "shorter ") + WORD[MDST[m[1]]] if MDST[m[1]] in ("attack", "decay") else
+              "%s %s" % (WORD[MDST[m[1]]], "up" if m[2] > 64 else "down") for m in e["mm"]
+              if m[0] == MSRC.index("morph") and m[2] != 64]
+        f.write("- %03d %s%s\n" % (i, name, " (MORPH: %s)" % ", ".join(mv) if mv else ""))
 print(len(B), "patches")

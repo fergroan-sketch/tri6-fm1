@@ -93,7 +93,9 @@ Turning it shows its value, and NO ROUTE when the patch has no route from it.
 SEQ's third page. SLOT (or ALGO) picks one of the eight routes; SOURCE, DEST and AMOUNT (bipolar, 0 is none) set it.
 The title line counts the routes in use. The routes are saved with the patch and go in its SysEx dump; a patch saved
 before the matrix existed has them all OFF, and a bank saved by 0.2 (four routes) is converted on the first start of
-0.3 (written in the new form at the next SAVE). A SysEx patch dump from 0.2 does not carry over: its routes read wrong.
+0.3 (written in the new form at the next SAVE). A SysEx patch dump from 0.2 does not carry over: its routes read wrong. A bank saved by an
+older version keeps your patches; any slot still at INIT picks up this version's factory patch for that slot (see
+PRESETS.md, which also lists each patch's MORPH move).
 
 - Sources: LFO (bipolar, after its shape), FIL ENV, AMP ENV, VELO, WHEEL, PRESSURE (the FM-1's keys, the hardest one
   held, or MIDI channel / poly pressure; the keys' pressure is also sent as channel pressure), KEY (the note, -1 at
