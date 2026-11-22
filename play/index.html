@@ -75,7 +75,7 @@ The first start downloads the firmware (600 KB).</p>
 <tr><td><kbd>A</kbd> … <kbd>'</kbd></td><td>play C4 to F5 (black keys on the row above)</td></tr>
 <tr><td><kbd>Z</kbd> <kbd>X</kbd></td><td>octave down / up</td></tr>
 <tr><td><kbd>Space</kbd></td><td>PLAY: chord memory (play a chord, then each key plays it)</td></tr>
-<tr><td>Knobs</td><td>drag or scroll a knob on the panel; PRESETS / SELECT change the patch, ALGORITHM ten at a time</td></tr>
+<tr><td>Knobs</td><td>drag or scroll a knob on the panel; PRESETS changes the patch, ALGORITHM ten at a time (the slot on the MOD MATRIX page), SELECT steps through the pages</td></tr>
 </table></div>
 
 <h2>The pages (click the panel's buttons; press again for the next page)</h2>
@@ -86,7 +86,7 @@ The first start downloads the firmware (600 KB).</p>
 <tr><td>SCL</td><td>FILTER › FILTER 2 / MIX (poles, velocity, noise)</td></tr>
 <tr><td>ENV</td><td>FILTER ENV › AMP ENV › AMP</td></tr>
 <tr><td>LFO</td><td>LFO › LFO DEST</td></tr>
-<tr><td>SEQ</td><td>POLY MOD › POLY MOD 2 › MOD MATRIX (four routes: slot, source, destination, amount)</td></tr>
+<tr><td>SEQ</td><td>POLY MOD › POLY MOD 2 › MOD MATRIX (eight routes: slot, source, destination, amount; ALGO picks the slot)</td></tr>
 <tr><td>FX</td><td>EFFECT A › EFFECT B › EFFECTS › CHARACTER (distortion, vintage, pan, volume)</td></tr>
 <tr><td>GLO</td><td>VOICE (unison) › GLIDE / PLAY › SETUP</td></tr>
 <tr><td>ARP</td><td>arpeggiator off › on › hold, and its page</td></tr>
@@ -98,7 +98,7 @@ MPL-2.0.</p>
 </main>
 <script>
 // the package this page plays: this site's own copy (GitHub Pages lets another site fetch it)
-const VERSION = "0.2";
+const VERSION = "0.3";
 const PKG = new URL(`../firmware/tri6fm1-${VERSION}.fwsc`, location.href).href;
 const EMU = "https://joakimeriksson.github.io/fm1-emu/?" +
   new URLSearchParams({ package: PKG, name: `TRI-6 FM-1 ${VERSION}` }) + "#play";   // (#play: its panel)
