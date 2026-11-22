@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "id": "tri6fm1",
+  "name": "tri6fm1",
+  "author": "Fergus",
+  "license": "MPL-2.0",
+  "tagline": "a Trigon-6 style polysynth for the FM-1",
+  "description": "A six-voice polysynth in the style of the Sequential Trigon-6: three oscillators a voice with sync, noise, feedback and drive into a 2/4-pole ladder filter, two envelopes, an LFO, poly mod, vintage, distortion, two effects, a four-slot mod matrix, unison with chord memory and an arpeggiator.",
+  "tags": ["synth"],
+  "install": "https://github.com/fergroan-sketch/tri6-fm1/releases/latest",
+  "source": "https://github.com/fergroan-sketch/tri6-fm1",
+  "screenshot": "card.png",
+  "hardware": {
+    "models": ["FM-1"],
+    "flash": ["856014", "B36014"],
+    "features": ["bluetooth-midi", "usb-audio-in", "usb-audio-out", "second-core", "velocity", "pressure", "screen-reader"]
+  },
+  "credits": "Built on fm1-base and felucca-bsp. Unofficial: not affiliated with Sequential or M-VAVE."
+}

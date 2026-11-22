@@ -1,0 +1,91 @@
+# TRI-6 FM-1 in the host simulator: tools/build.py app --host, then
+#   app/build/host/tri6fm1_host app/tests/basic.txt OUTDIR
+wait 600
+expect patch 0
+shot home.png
+turn PRESET 1
+wait 30
+expect patch 1
+key 7 down
+key 11 down
+key 14 down
+wait 200
+expect voice0 60
+expect voice1 64
+expect voice2 67
+shot playing.png
+key 7 up
+key 11 up
+key 14 up
+wait 50
+tap EDIT
+wait 30
+expect page 1
+shot osc1.png
+tap EDIT
+wait 30
+shot osc2.png
+turn K2 10
+wait 30
+expect dirty 1
+tap EDIT
+tap EDIT
+wait 30
+shot oscmore.png
+tap SEL
+wait 30
+shot filter.png
+tap SEL
+wait 30
+shot filter2.png
+tap ENV
+wait 30
+shot fenv.png
+tap LFO
+wait 30
+shot lfo.png
+tap LFO
+wait 30
+shot lfodest.png
+tap SEQ
+wait 30
+shot polymod.png
+tap FX
+wait 30
+shot fxa.png
+tap FX
+wait 30
+shot fxb.png
+tap FX
+tap FX
+wait 30
+shot character.png
+tap GLO
+wait 30
+shot voice.png
+tap GLO
+tap GLO
+wait 30
+shot setup.png
+tap HOME
+turn PRESET 1
+wait 30
+expect patch 2
+expect dirty 0
+tap SAVE
+wait 30
+reboot
+wait 600
+expect patch 2
+wav chord.wav
+midi 90 30 64
+midi 90 37 64
+midi 90 3C 64
+midi 90 40 64
+wait 2000
+midi 80 30 00
+midi 80 37 00
+midi 80 3C 00
+midi 80 40 00
+wait 1500
+wavstop

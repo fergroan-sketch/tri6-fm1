@@ -1,0 +1,20 @@
+# TRI-6 FM-1's build settings (fm1-base tools/build.py)
+name = "TRI6FM1"
+id_prefix = "FM-1_62"            # package identity, this firmware's own
+usb_manufacturer = "tri6fm1"
+usb_product = "TRI-6 FM-1"
+o2 = ["tri6.c"]                  # the engine, at -O2
+ble = true                       # Bluetooth MIDI (--no-ble builds without it)
+companion = false
+cpu2 = true                      # the second core renders voices 4 to 6
+cpu2_fallback = true             # and if it fails, one core carries on until power-off
+# the site and firmware.json
+tagline = "a Trigon-6 style polysynth for the FM-1"
+repo = "https://github.com/fergroan-sketch/tri6-fm1"
+install = "https://github.com/fergroan-sketch/tri6-fm1/releases/latest"   # the .fwsc; fm1-base's web installer or the Firmware Hub installs it
+screenshot = "card.png"
+licence = "MPL-2.0"
+credits = "Built on fm1-base and felucca-bsp. Unofficial: not affiliated with Sequential or M-VAVE."
+author = "Fergus"
+description = "A six-voice polysynth in the style of the Sequential Trigon-6: three oscillators a voice with sync, noise, feedback and drive into a 2/4-pole ladder filter, two envelopes, an LFO, poly mod, vintage, distortion, two effects, a four-slot mod matrix, unison with chord memory and an arpeggiator."
+tags = ["synth"]
