@@ -18,7 +18,7 @@ FX = dict(off=0, bbd=1, ddl=2, cho=3, ph1=4, ph2=5, ph3=6, ring=7, fl1=8, fl2=9,
 WAVE = dict(T=1, S=2, P=4, R=8)
 CHORD_FLAG = "chord"
 # the mod matrix: m1..m8=SOURCE:DEST:AMOUNT (amount -63..63), in the order of tri6.h's MS_* and MD_*
-MSRC = "off lfo fenv aenv vel modw press key rand bend osc3".split()
+MSRC = "off lfo fenv aenv vel modw press key rand bend osc3 morph".split()
 MDST = ("off pitch pitch1 pitch2 pitch3 pw1 pw2 pw3 lvl1 lvl2 lvl3 noise cutoff res fdrv amp pan lforate lfoamt amix "
         "bmix fenv attack decay ap1 bp1").split()
 NMM = 8
@@ -133,6 +133,18 @@ P("VOCAL PAD", "o1wave=S o2wave=S o2lvl=80 p2=-7 cut=54 res=80 pole2=1 fenv=70 f
 
 C = "Mod matrix"
 P("TWO LFOS", "o1wave=P o1pw=50 o2wave=S o2lvl=80 p2=7 o3oct=0 o3wave=T o3lvl=0 o3key=0 p3=-500 cut=56 res=35 fenv=74 fa=60 fd=90 fs=80 fr=80 aa=60 ad=90 as=120 ar=85 lfreq=58 lamt=8 lpitch=3 vint=30 pan=100 fxa=cho amix=40 fxb=hall bmix=35 bp1=90 m1=osc3:pw1:30 m2=osc3:cutoff:10 m3=vel:fenv:15 m4=rand:pan:30", C)
+P("VELO BRASS", "o2lvl=90 p2=8 cut=44 res=14 fenv=92 fa=50 fd=78 fs=70 fr=58 aa=50 ad=80 as=115 ar=60 vint=35 pan=60 fxb=hall bmix=26 bp1=60 bp2=50 m1=vel:cutoff:30 m2=vel:attack:-40 m3=vel:fdrv:12 m4=morph:cutoff:30", C)
+P("PRESS PAD", "o2lvl=90 p2=9 o3lvl=60 o3oct=2 p3=-7 cut=46 res=15 fenv=76 fa=90 fd=100 fs=90 fr=95 aa=92 ad=100 as=120 ar=98 vint=50 pan=90 lfreq=58 lpitch=7 fxa=cho amix=40 ap1=30 ap2=70 fxb=hall bmix=40 bp1=90 m1=press:cutoff:35 m2=press:lfoamt:24 m3=modw:lfoamt:30 m4=morph:bmix:40", C)
+P("KEY PIANO", "o1wave=S+T o2wave=P o2pw=30 o2lvl=70 p2=4 cut=56 res=5 fenv=96 fd=84 fs=15 fr=60 ad=108 as=0 ar=66 fkey=2 vint=20 pan=70 fxb=room bmix=30 bp1=70 m1=key:decay:-30 m2=vel:cutoff:28 m3=key:pan:30 m4=morph:cutoff:25", C)
+P("OSC3 WOBBLE", "o1wave=P o1pw=50 o2lvl=85 p2=7 o3oct=0 o3key=0 o3lvl=0 p3=-300 cut=50 res=50 fenv=70 fd=70 fs=60 ad=70 as=120 ar=40 lfreq=40 vint=20 pan=50 fxa=cho amix=30 fxb=room bmix=25 m1=osc3:cutoff:30 m2=lfo:pw1:25 m3=lfo:pw2:-25 m4=morph:res:30", C)
+P("RAND PLUCK", "o1wave=S+P o1pw=40 o2lvl=80 p2=7 cut=46 res=30 fenv=100 fd=52 fs=0 fr=50 ad=78 as=0 ar=60 fvel=1 vint=25 pan=0 fxa=cho amix=30 fxb=plate bmix=30 bp1=70 m1=rand:cutoff:24 m2=rand:pan:60 m3=rand:decay:20 m4=morph:decay:40", C)
+P("S+H SWEEP", "o1wave=S o2lvl=85 p2=10 o3oct=0 o3key=0 o3lvl=0 p3=200 cut=56 res=70 fenv=64 lfreq=74 lshape=4 ad=60 as=120 ar=50 vint=20 pan=60 fxa=ddl amix=30 ap1=64 ap2=55 async=1 fxb=room bmix=25 m1=lfo:cutoff:32 m2=osc3:res:14 m3=lfo:pan:30 m4=morph:lforate:30", C)
+P("ENV PWM KEY", "o1wave=P o1pw=60 o2wave=P o2pw=40 o2lvl=60 p2=5 cut=66 res=10 fenv=84 fd=80 fs=20 fr=70 ad=95 as=0 ar=72 vint=25 pan=60 fxa=cho amix=40 fxb=room bmix=25 m1=fenv:pw1:40 m2=fenv:pw2:-35 m3=vel:decay:30 m4=vel:cutoff:20 m5=morph:pw1:-30", C)
+P("BEND GROWL", "o1wave=S+P o2lvl=95 p2=7 cut=64 res=50 fenv=86 fd=80 fs=70 fr=50 as=120 ar=46 fdrv=80 uni=2 glide=1 grate=50 vint=30 pan=0 bend=2 fxb=room bmix=20 m1=bend:fdrv:40 m2=bend:cutoff:24 m3=bend:res:16 m4=morph:fdrv:35", C)
+P("WHEEL MORPH", "o1wave=S o2wave=P o2pw=30 o2lvl=0 p2=1200 o3lvl=0 o3oct=4 cut=48 res=25 fenv=74 fa=80 fd=95 fs=90 fr=90 aa=85 ad=95 as=120 ar=95 lfreq=50 lamt=10 lpw=2 vint=45 pan=100 fxa=cho amix=45 fxb=hall bmix=35 m1=modw:lvl2:60 m2=modw:lvl3:40 m3=modw:cutoff:25 m4=modw:lforate:30 m5=morph:lvl2:60", C)
+P("PRESS LEAD", "o2lvl=95 p2=12 o3lvl=60 o3oct=4 cut=74 res=25 fenv=82 fd=70 fs=80 fr=50 ad=80 as=120 ar=46 uni=3 glide=1 grate=50 gmode=1 vint=40 pan=60 lfreq=70 lpitch=7 fxa=bbd amix=25 ap1=75 ap2=50 fxb=hall bmix=20 m1=press:lfoamt:40 m2=press:cutoff:22 m3=aenv:noise:8 m4=morph:lfoamt:30", C)
+P("SLOW ATTACK", "o2lvl=90 p2=9 cut=52 res=15 fenv=80 fa=40 fd=100 fs=90 fr=95 aa=40 ad=100 as=120 ar=98 vint=50 pan=90 fxa=cho amix=40 fxb=hall bmix=40 bp1=90 m1=vel:attack:-50 m2=key:attack:-20 m3=rand:pitch2:10 m4=vel:amp:20 m5=morph:attack:50", C)
+P("MORPH PAD", "o1wave=S o2wave=T o2oct=3 o2lvl=0 p2=5 o3lvl=0 cut=42 res=20 fenv=74 fa=80 fd=95 fs=90 fr=95 aa=80 ad=95 as=120 ar=95 lfreq=40 lamt=8 lpw=1 vint=45 pan=100 fxa=cho amix=40 fxb=hall bmix=25 bp1=95 m1=morph:cutoff:30 m2=morph:lvl2:55 m3=morph:bmix:35 m4=morph:lforate:20 m5=morph:attack:-20 m6=vel:cutoff:15", C)
 
 # each patch's VOLUME, from the demo renders' loudness (tools/gen_demo.py), so the bank plays at one level
 LEVEL = {"INIT": 87, "BRASS SECT": 92, "SYNTH HORN": 98, "SOFT BRASS": 94, "BRASS SWELL": 98, "BRIGHT STAB": 99, "SYNC BRASS": 94, "WARM PAD": 99, "GLASS PAD": 102, "DARK PAD": 104, "SLOW BLOOM": 102, "PWM PAD": 95, "SPACE PAD": 98, "DRIFT PAD": 97, "CRYSTAL PAD": 104, "STRINGS": 99, "SLOW STRING": 107, "ENSEMBLE": 95, "CELLO SECT": 92, "SOFT KEYS": 108, "BELL KEYS": 107, "CLAV": 106, "POLY PIANO": 98, "VIBES": 103, "ORGAN": 83, "FAT BASS": 106, "SUB BASS": 102, "ACID BASS": 100, "UNISON BASS": 89, "PLUCK BASS": 112, "FM BASS": 106, "DRIVE BASS": 77, "WOBBLE BASS": 79, "SYNC LEAD": 106, "SAW LEAD": 99, "SQUARE LEAD": 105, "SCREAM LEAD": 81, "GLIDE LEAD": 113, "FEEDBACK LD": 88, "SOLO FLUTE": 113, "PM LEAD": 113, "PLUCK": 112, "MALLET": 110, "KALIMBA": 112, "HARP": 109, "STEEL DRUM": 108, "MARIMBA": 112, "METAL BELL": 100, "CHAOS": 80, "SWEEP FX": 105, "LASER": 126, "NOISE WIND": 127, "RING BELL": 110, "CHORD STAB": 118, "MINOR 9": 100, "FIFTHS": 97, "ARP PLUCK": 127, "ARP SEQ": 126, "ARP BELLS": 127, "ARP BASS": 123, "ARP DRIVE": 89, "ARP SYNC": 127, "ARP RANDOM": 127, "ARP DREAM": 125, "CHOIR": 99, "VOCAL PAD": 104, "TWO LFOS": 92}

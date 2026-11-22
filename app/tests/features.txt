@@ -231,3 +231,38 @@ expect mm1dst 23
 expect mm1amt 39
 # 0.2's routes, converted
 expect conv02 1
+# --- MORPH: ALGORITHM away from the matrix page is a macro (a matrix source), CC 16 too; OCT held + PRESETS jumps 10
+tap HOME
+wait 30
+midi C0 4E
+wait 60
+expect patch 78
+expect mm0src 11
+turn ALGO 1
+wait 200
+turn ALGO 1
+wait 30
+expect morph 2
+expect patch 78
+midi B0 10 64
+wait 60
+expect morph 100
+midi 90 3C 64
+wait 400
+shot morph.png
+midi 80 3C 00
+wait 300
+expect octave 0
+press OCT+
+turn PRESET -1
+wait 30
+release OCT+
+wait 30
+expect patch 68
+expect octave 0
+tap OCT+
+wait 30
+expect octave 1
+tap OCT-
+wait 30
+expect octave 0
