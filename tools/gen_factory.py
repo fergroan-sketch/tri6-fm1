@@ -234,6 +234,66 @@ CAT_MORPH = {
 for cat, pats in NEW.items():
     for name, spec in pats:
         P(name, spec, cat)
+# 0.5 sound pass (Fergus's listening notes, 23 Nov 2026): playable lengths for the plucks, keys and arps (a real
+# sustain and release instead of a blip), more movement in the pads and strings (vibrato on the wheel, slow LFOs, glide
+# on some), MUTED HORN and PWM PAD made distinct from their neighbours, ARP SYNC replaced. Each line's keys override
+# the patch's own; a name in REPLACE is a new patch in that slot.
+REVISE = {
+ # brass: MUTED HORN apart from FANFARE: dark 2-pole, a wah from velocity, vibrato on pressure and the wheel
+ "MUTED HORN": "o1wave=P o1pw=30 o2wave=T o2lvl=60 p2=3 cut=30 res=45 fenv=92 fa=55 fd=72 fs=40 fr=60 aa=45 ad=80 as=112 ar=60 lfreq=62 lamt=6 lpitch=7 pan=30 fxa=bbd amix=20 ap1=70 ap2=40 m2=press:res:20 m3=modw:lfoamt:40 m4=press:lfoamt:25",
+ # pads
+ "WARM PAD": "m2=modw:lfoamt:35 lpitch=7",
+ "GLASS PAD": "lfreq=18 lamt=25 lpw=1 m1=lfo:pan:40 m2=modw:lfoamt:30",
+ "DARK PAD": "lfreq=14 lamt=22 lfilt=1 glide=1 grate=34 m1=modw:cutoff:25",
+ "SLOW BLOOM": "aa=80 m1=aenv:lfoamt:25 lpitch=7",
+ "PWM PAD": "o1wave=P o1pw=30 o2wave=P o2pw=70 o2oct=3 o2lvl=70 p2=5 pole2=1 cut=66 res=28 fenv=74 lfreq=22 lamt=70 lpw=3 lfilt=1 fa=70 aa=70 glide=1 grate=36 vint=45 fxa=ph1 amix=40 ap1=25 ap2=70 fxb=plate bmix=40 bp1=95 m1=rand:pw2:20 m2=modw:lforate:40",
+ "SPACE PAD": "m1=lfo:pan:50 m2=modw:lfoamt:30",
+ "DRIFT PAD": "lfreq=30 lamt=8 lpitch=7 m2=modw:lfoamt:35",
+ "TRIGON PAD": "m1=modw:lfoamt:35 m2=rand:pw1:15 lpitch=1",
+ "FDBK PAD": "aa=70 fa=70 fs=100 lpitch=7 lamt=14 m1=modw:lfoamt:35 m2=aenv:fdrv:-15 glide=1 grate=30",
+ "SYNC PAD": "m3=modw:lfoamt:30",
+ "AIR PAD": "m1=lfo:pan:45 m2=modw:cutoff:25",
+ "ICE PAD": "lfreq=24 lamt=20 lpw=2 m1=modw:lfoamt:30",
+ # strings: vibrato on the wheel everywhere, glide on the solo-ish ones, faster speak where it was slow
+ "STRINGS": "m2=modw:lfoamt:40",
+ "SLOW STRING": "aa=80 fa=75 lamt=14 glide=1 grate=30 m1=modw:lfoamt:40 m2=aenv:lfoamt:20",
+ "ENSEMBLE": "aa=55 fa=50 lamt=30 lpitch=1 m1=modw:lfoamt:30 m2=rand:pan:30",
+ "CELLO SECT": "glide=1 grate=32 m1=modw:lfoamt:40 m2=vel:attack:-30",
+ "STRING MACH": "aa=55 fa=55 lamt=30 lpitch=3 m1=modw:lfoamt:30 m2=press:cutoff:20",
+ "VIOLINS": "aa=55 fa=50 lamt=10 glide=1 grate=28 m3=vel:attack:-30 m4=press:cutoff:18",
+ "BOW STRINGS": "m3=modw:lfoamt:40",
+ "PIZZICATO": "fd=70 fs=20 ad=86 as=35 ar=76",
+ "OCTAVE STRS": "m1=modw:lfoamt:40 m2=press:cutoff:20",
+ "DARK STRING": "o1oct=2 o2oct=3 cut=52 lamt=14 m1=modw:lfoamt:40 m2=press:cutoff:22",
+ # keys and plucks: a sustain under the strike, a longer release
+ "CLAV": "fd=56 fs=25 ad=72 as=50 ar=40",
+ "EP TINE": "fs=30 ad=108 as=55 ar=82",
+ "TOY PIANO": "fs=10 ad=90 as=40 ar=72",
+ "PLUCK": "fd=66 fs=25 ad=90 as=50 ar=72",
+ "HARP": "fd=80 fs=15 ad=100 as=35 ar=96",
+ "STEEL DRUM": "fd=70 fs=15 ad=88 as=35 ar=78",
+ "MARIMBA": "fd=62 fs=10 ad=82 as=25 ar=70",
+ "NYLON": "fd=82 fs=15 ad=102 as=40 ar=88",
+ "RING BELL": "fd=96 fs=20 ad=108 as=45 ar=104",
+ "HOUSE STAB": "fd=66 fs=25 ad=80 as=45 ar=62",
+ "RAND PLUCK": "fd=62 fs=25 ad=88 as=40 ar=70",
+ # arps: notes that ring into each other
+ "ARP PLUCK": "fd=60 fs=20 ad=74 as=40 ar=56",
+ "ARP SEQ": "fd=62 fs=25 ad=72 as=40 ar=48",
+ "ARP BASS": "fd=58 fs=25 ad=70 as=50 ar=44",
+ # voices and the rest
+ "OOH CHOIR": "cut=54 m1=modw:lfoamt:35",
+ "BRASS 2POLE": "cut=52 m1=modw:lfoamt:30 lpitch=7 lamt=4",
+ "SLOW ATTACK": "cut=58",
+}
+REPLACE = {
+ "ARP SYNC": ("ARP GLIDE", "o1wave=S o2wave=P o2pw=40 o2lvl=85 p2=7 cut=58 res=35 fenv=90 fd=70 fs=50 fr=50 ad=80 as=80 ar=56 glide=1 grate=40 gmode=0 lfreq=66 lamt=10 lpitch=3 vint=30 pan=90 arp=1 amode=2 aoct=1 adiv=6 bpm=116 fxa=ddl amix=30 ap1=64 ap2=50 async=1 fxb=hall bmix=28 m1=modw:lfoamt:40"),
+}
+for i, (name, v, e, cat) in enumerate(list(B)):
+    if name in REVISE or name in REPLACE:
+        new, spec = REPLACE[name] if name in REPLACE else (name, SPEC[name] + " " + REVISE[name])
+        P(new, spec, cat)
+        B[i] = B.pop()
 # the bank by kind: each category's patches together, in the order the categories first come (Mod matrix last)
 ORDER = list(dict.fromkeys(b[3] for b in B))
 B.sort(key=lambda b: ORDER.index(b[3]))
@@ -246,6 +306,10 @@ for name, v, e, cat in B:
 
 # each patch's VOLUME, from the demo renders' loudness (tools/gen_demo.py), so the bank plays at one level
 LEVEL = {"INIT": 87, "BRASS SECT": 92, "SYNTH HORN": 98, "SOFT BRASS": 94, "BRASS SWELL": 98, "BRIGHT STAB": 99, "SYNC BRASS": 94, "WARM PAD": 99, "GLASS PAD": 102, "DARK PAD": 104, "SLOW BLOOM": 102, "PWM PAD": 95, "SPACE PAD": 98, "DRIFT PAD": 97, "CRYSTAL PAD": 104, "STRINGS": 99, "SLOW STRING": 107, "ENSEMBLE": 95, "CELLO SECT": 92, "SOFT KEYS": 108, "BELL KEYS": 107, "CLAV": 106, "POLY PIANO": 98, "VIBES": 103, "ORGAN": 83, "FAT BASS": 106, "SUB BASS": 102, "ACID BASS": 100, "UNISON BASS": 89, "PLUCK BASS": 112, "FM BASS": 106, "DRIVE BASS": 77, "WOBBLE BASS": 79, "SYNC LEAD": 106, "SAW LEAD": 99, "SQUARE LEAD": 105, "SCREAM LEAD": 81, "GLIDE LEAD": 113, "FEEDBACK LD": 88, "SOLO FLUTE": 113, "PM LEAD": 113, "PLUCK": 112, "MALLET": 110, "KALIMBA": 112, "HARP": 109, "STEEL DRUM": 108, "MARIMBA": 112, "METAL BELL": 100, "CHAOS": 80, "SWEEP FX": 105, "LASER": 126, "NOISE WIND": 127, "RING BELL": 110, "CHORD STAB": 118, "MINOR 9": 100, "FIFTHS": 97, "ARP PLUCK": 127, "ARP SEQ": 126, "ARP BELLS": 127, "ARP BASS": 123, "ARP DRIVE": 89, "ARP SYNC": 127, "ARP RANDOM": 127, "ARP DREAM": 125, "CHOIR": 99, "VOCAL PAD": 104, "TWO LFOS": 92, "BRASS STACK": 101, "PM BRASS": 92, "BRASS 2POLE": 95, "FANFARE": 91, "MUTED HORN": 88, "TRIGON PAD": 97, "FDBK PAD": 97, "SYNC PAD": 107, "AIR PAD": 106, "ICE PAD": 97, "STRING MACH": 105, "VIOLINS": 102, "BOW STRINGS": 96, "PIZZICATO": 121, "OCTAVE STRS": 103, "DARK STRING": 108, "EP TINE": 104, "WURLY": 97, "HARPSICHORD": 107, "PERC ORGAN": 75, "SYNC KEYS": 114, "TOY PIANO": 119, "SYNC BASS": 107, "GROWL BASS": 79, "REESE BASS": 91, "FUNK BASS": 118, "DUB BASS": 110, "OCTAVE LEAD": 108, "PWM LEAD": 101, "SYNC SWEEP": 109, "WHISTLE": 116, "DRIVE LEAD": 83, "NYLON": 93, "BELL PLUCK": 88, "MUSIC BOX": 99, "SYNC PLUCK": 115, "DRONE": 108, "RISER": 115, "ALARM": 81, "SCI-FI": 111, "MAJOR 7": 107, "SUS4": 122, "POWER CHORD": 80, "HOUSE STAB": 118, "DUB CHORD": 123, "ARP PWM": 116, "ARP TRIGON": 119, "AAH VOICES": 103, "OOH CHOIR": 106, "VELO BRASS": 84, "PRESS PAD": 99, "KEY PIANO": 88, "OSC3 WOBBLE": 93, "RAND PLUCK": 121, "S+H SWEEP": 99, "ENV PWM KEY": 91, "BEND GROWL": 91, "WHEEL MORPH": 104, "PRESS LEAD": 97, "SLOW ATTACK": 91, "MORPH PAD": 99}
+# 0.5: the revised patches levelled again (each rendered from a fresh start, to the bank's median loudness; BRASS 2POLE,
+# DARK STRING, OOH CHOIR and SLOW ATTACK 2.5 dB above it, as they sounded too quiet)
+LEVEL05 = {'BRASS 2POLE': 100, 'MUTED HORN': 94, 'WARM PAD': 98, 'DARK PAD': 99, 'SLOW BLOOM': 101, 'PWM PAD': 95, 'DRIFT PAD': 98, 'TRIGON PAD': 93, 'FDBK PAD': 90, 'SLOW STRING': 101, 'ENSEMBLE': 94, 'CELLO SECT': 92, 'STRING MACH': 104, 'PIZZICATO': 112, 'DARK STRING': 113, 'CLAV': 100, 'EP TINE': 97, 'TOY PIANO': 104, 'PLUCK': 110, 'HARP': 103, 'STEEL DRUM': 102, 'MARIMBA': 109, 'NYLON': 95, 'RING BELL': 105, 'HOUSE STAB': 110, 'ARP PLUCK': 127, 'ARP SEQ': 119, 'ARP BASS': 111, 'ARP GLIDE': 116, 'OOH CHOIR': 104, 'RAND PLUCK': 110, 'SLOW ATTACK': 99}
+LEVEL.update(LEVEL05)
 for i, (name, v, e, cat) in enumerate(B):
     if name in LEVEL and 'vol=' not in SPEC[name]:
         v[K.index('vol')] = LEVEL[name]

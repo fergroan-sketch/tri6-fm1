@@ -140,7 +140,7 @@
 - 103 ARP BELLS (MORPH: longer decay, cutoff up)
 - 104 ARP BASS (MORPH: longer decay, cutoff up)
 - 105 ARP DRIVE (MORPH: longer decay, cutoff up)
-- 106 ARP SYNC (MORPH: longer decay, cutoff up)
+- 106 ARP GLIDE (MORPH: longer decay, cutoff up)
 - 107 ARP RANDOM (MORPH: longer decay, cutoff up)
 - 108 ARP DREAM (MORPH: longer decay, cutoff up)
 - 109 ARP PWM (MORPH: longer decay, cutoff up)

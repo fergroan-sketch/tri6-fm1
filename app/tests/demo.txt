@@ -4186,7 +4186,7 @@ wavstop
 turn PRESET 1
 wait 30
 expect patch 106
-wav 106-arp-sync.wav
+wav 106-arp-glide.wav
 midi 90 30 64
 midi 90 33 64
 midi 90 37 64
