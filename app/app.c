@@ -104,9 +104,45 @@ static void patch_init(tri_patch_t *d, const factory_t *f)
     mm_fix(d);
 }
 
+/* D10: 0.4 sorted the factory bank by kind, so a block saved by 0.2 or 0.3 holds that release's patches in their old
+ * slots (SUB BASS at 026: a patch twice, 13 others out of reach). A slot whose fingerprint is the old release's factory
+ * patch for that slot was never edited: it gets this release's patch. An edited slot stays as it is. */
+#include "oldbank.h"
+static uint32_t patch_print(const tri_patch_t *t)   /* tools/gen_oldbank.py's: name, parameters but VOLUME, pitches,
+                                                     * chord; FNV-1a */
+{
+    uint32_t h = 0x811C9DC5u, i;
+    uint8_t b[TRI_NAME_LEN + TP_N + 4 + 7];
+    for (i = 0; i < TRI_NAME_LEN; i++)
+        b[i] = (uint8_t)t->name[i];
+    for (i = 0; i < TP_N; i++)
+        b[TRI_NAME_LEN + i] = i == TP_VOLUME ? 0u : t->p[i];
+    i = TRI_NAME_LEN + TP_N;
+    b[i++] = (uint8_t)((uint16_t)t->pitch2 & 0xFFu);
+    b[i++] = (uint8_t)((uint16_t)t->pitch2 >> 8);
+    b[i++] = (uint8_t)((uint16_t)t->pitch3 & 0xFFu);
+    b[i++] = (uint8_t)((uint16_t)t->pitch3 >> 8);
+    b[i++] = t->chord_n;
+    for (int k = 0; k < 6; k++)
+        b[i++] = (uint8_t)t->chord[k];
+    for (i = 0; i < sizeof b; i++)
+        h = (h ^ b[i]) * 0x01000193u;
+    return h;
+}
+static int old_factory(int idx, const tri_patch_t *t)   /* 1: an earlier release's factory patch for this slot */
+{
+    uint32_t h = patch_print(t), v;
+    for (v = 0; v < OLD_BANKS; v++)
+        if (OLD_PRINT[v][idx] && OLD_PRINT[v][idx] == h)
+            return 1;
+    return 0;
+}
+static uint32_t migrated;                /* slots moved to this release's patch at the last load (the host's tests) */
+
 static void banks_load(void)
 {
     int b;
+    migrated = 0;
     for (b = 0; b < NBLK; b++)
         if (plat_store_load(OBJ_BANK0 + (uint32_t)b, &blocks[b], sizeof blocks[b]) == (int)sizeof blocks[b]
             && blocks[b].magic == BANK_MAGIC_02) {   /* saved by 0.1 or 0.2: the same patches, routes converted */
@@ -116,7 +152,10 @@ static void banks_load(void)
             for (i = 0; i < BLK_N; i++) {
                 int idx = b * BLK_N + i;
                 mm_from_02(&blocks[b].p[i]);
-                if (idx >= 66 && idx < NFACTORY && !memcmp(&blocks[b].p[i], &init, sizeof init))
+                if (idx > 0 && idx < NFACTORY && old_factory(idx, &blocks[b].p[i])) {
+                    migrated++;                  /* 0.2's own patch: this release's in its slot */
+                    patch_init(&blocks[b].p[i], &FACTORY[idx]);
+                } else if (idx >= 66 && idx < NFACTORY && !memcmp(&blocks[b].p[i], &init, sizeof init))
                     patch_init(&blocks[b].p[i], &FACTORY[idx]);   /* still INIT past 0.2's bank: 0.3's patches */
             }
             blocks[b].magic = BANK_MAGIC;
@@ -133,9 +172,15 @@ static void banks_load(void)
             for (i = 0; i < BLK_N; i++) {
                 int idx = b * BLK_N + i;
                 mm_fix(&blocks[b].p[i]);
-                if (idx > 0 && idx < NFACTORY && !memcmp(&blocks[b].p[i], &init, sizeof init)) {
-                    patch_init(&blocks[b].p[i], &FACTORY[idx]);
-                    blk_dirty[b] = 1;
+                if (idx > 0 && idx < NFACTORY && (old_factory(idx, &blocks[b].p[i])
+                                                  || !memcmp(&blocks[b].p[i], &init, sizeof init))) {
+                    tri_patch_t now;             /* INIT, or 0.2's / 0.3's unedited patch: this release's */
+                    patch_init(&now, &FACTORY[idx]);
+                    if (memcmp(&now, &blocks[b].p[i], sizeof now)) {
+                        migrated += memcmp(&blocks[b].p[i], &init, sizeof init) != 0;
+                        blocks[b].p[i] = now;
+                        blk_dirty[b] = 1;
+                    }
                 }
             }
         }
@@ -1380,6 +1425,28 @@ void app_frame(void)
 #ifdef PLAT_HOST
 int app_expect(const char *what, int *got)
 {
+    if (!strcmp(what, "migrated")) {     /* D10: slots given this release's patch at the last load */
+        *got = (int)migrated;
+        return 1;
+    }
+    if (!strncmp(what, "slotfac", 7)) {  /* slotfac26: 1 = slot 26 holds this release's factory patch 026 */
+        int i = atoi(what + 7) % NPATCH;
+        tri_patch_t f;
+        patch_init(&f, &FACTORY[i < NFACTORY ? i : 0]);
+        *got = !memcmp(&f, slot(i), sizeof f);
+        return 1;
+    }
+    if (!strcmp(what, "dupes")) {        /* names in the bank more than once (INIT aside) */
+        int i, j, n = 0;
+        for (i = 0; i < NPATCH; i++)
+            for (j = 0; j < i; j++)
+                if (strcmp(slot(i)->name, "INIT") && !strcmp(slot(i)->name, slot(j)->name)) {
+                    n++;
+                    break;
+                }
+        *got = n;
+        return 1;
+    }
     if (!strcmp(what, "octave"))
         *got = set.octave;
     else if (!strcmp(what, "patch"))
